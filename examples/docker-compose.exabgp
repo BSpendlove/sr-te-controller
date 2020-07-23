@@ -1,0 +1,19 @@
+version: "3.1"
+services:
+  exabgp:
+    image: pierky/exabgp
+    container_name: exabgp
+    ports:
+        - "127.0.0.1:179:179"
+    privileged: true
+    restart: always
+    volumes:
+      - ./exabgp/exabgp.conf:/etc/exabgp/exabgp.conf
+
+  local_api:
+    build: .
+    ports:
+      - "5000:5000"
+    container_name: local_api
+    restart: always
+

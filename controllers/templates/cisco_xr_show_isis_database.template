@@ -1,0 +1,8 @@
+Value LSPID ((\d+.\d+.\d+)|\S+)
+Value LSP_SEQ_NUM (0x\S+)
+Value LSP_CHECKSUM (0x\S+)
+Value LSP_HOLDTIME (\d+)
+Value ATT_P_OL (\d?\/\d?\/\d?)
+
+Start
+  ^${LSPID}\s+${LSP_SEQ_NUM}\s+${LSP_CHECKSUM}\s+${LSP_HOLDTIME}\s+${ATT_P_OL} -> Record

@@ -1,0 +1,34 @@
+version: "3.1"
+services:
+  frrouting:
+    image: frrouting/frr
+    container_name: frrouting
+    privileged: true
+    restart: always
+    ports:
+      - "179:179"
+    volumes:
+      - ./config:/etc/frr
+    networks:
+     api_internal: null
+     frrouting_external:
+       ipv4_address: ${FRR_IP_ADDRESS}
+  local_api:
+    build: .
+    ports:
+      - "5000:5000"
+    container_name: local_api
+    restart: always
+    networks:
+      api_internal: null
+
+networks:
+  api_internal:
+    driver: bridge
+  frrouting_external:
+    driver: macvlan
+    driver_opts:
+      parent: ens33
+    ipam:
+      config:
+        - subnet: 192.168.0.0/24
