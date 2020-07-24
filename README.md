@@ -17,3 +17,6 @@ I'm currently just using the TextFSM module to pull data along with some pre-mad
 The container side of this project won't be done until I get to a decent size of API calls so I currently just run this as a flask app in a python virtual environment... Here is a diagram of what I want to achieve in the following months:
 
 ![IS-IS SDN Controller Example](/img/isis-sdn-controller-example.JPG)
+
+
+### THIS README NEEDS TO BE UPDATED AS I HAVE MANAGED TO GET AN EXAMPLE WITH EXABGP TO SEND A POST REQUEST FOR THE JSON DATA FROM EXABGP STDIN

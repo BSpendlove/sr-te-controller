@@ -1,14 +1,19 @@
-FROM ubuntu:18.04
+FROM alpine:3.7
 
-RUN apt-get update -y && \
-    apt-get install -y python3 python3-pip python3-dev
+MAINTAINER Brandon Spendlove <brandon.spendlove@veesix-networks.co.uk>
 
-# We copy just the requirements.txt first to leverage Docker cache
+EXPOSE 179
+
+RUN apk --no-cache add wget curl python3 python3-dev coreutils libffi-dev libc-dev openssl-dev bash \
+    && apk --no-cache add --virtual build-dependencies build-base py3-pip \
+    && pip3 install ipaddr exabgp ipy requests
+
+ADD entrypoint.sh /
 COPY ./requirements.txt /app/requirements.txt
 
 WORKDIR /app
 RUN pip3 install -r requirements.txt
 COPY . /app
-ENTRYPOINT [ "python3" ]
-CMD [ "app.py" ]
 
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["exabgp"]
