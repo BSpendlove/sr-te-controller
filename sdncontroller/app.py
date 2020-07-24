@@ -1,5 +1,5 @@
 from flask import Flask, request
-import views.exabgptype as exabgp_view
+from views import exabgptype as exabgp_view
 
 app = Flask(__name__)
 
