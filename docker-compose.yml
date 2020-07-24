@@ -1,12 +1,18 @@
 version: "3.1"
 services:
-  local_api:
-    build: .
+  exabgpapi:
+    build: ./exabgp
     ports:
-      - "5000:5000"
       - "179:179"
     volumes:
       - ./exabgp/exabgp.conf:/etc/exabgp/exabgp.conf
-    container_name: local_api
+    container_name: exabgpapi
+    restart: always
+
+  sdn_controller:
+    build: ./sdncontroller
+    ports:
+      - "5000:5000"
+    container_name: sdncontroller
     restart: always
 

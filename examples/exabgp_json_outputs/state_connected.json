@@ -1,0 +1,20 @@
+{
+    "exabgp": "4.0.1",
+    "time": 1595602960.0043283,    
+    "host": "378f468597d9",        
+    "pid": 15,
+    "ppid": 1,
+    "counter": 1689,
+    "type": "state",
+    "neighbor": {
+        "address": {
+            "local": "0.0.0.0",    
+            "peer": "192.168.0.249"
+        },
+        "asn": {
+            "local": 100,
+            "peer": 100
+        },
+        "state": "connected"       
+    }
+} 

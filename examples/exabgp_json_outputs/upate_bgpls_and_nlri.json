@@ -1,0 +1,50 @@
+{
+    "exabgp": "4.0.1",
+    "time": 1595603088.179585,
+    "host": "378f468597d9",
+    "pid": 15,
+    "ppid": 1,
+    "counter": 1696,
+    "type": "update",
+    "neighbor": {
+        "address": {
+            "local": "0.0.0.0",
+            "peer": "192.168.0.249"
+        },
+        "asn": {
+            "local": 100,
+            "peer": 100
+        },
+        "direction": "receive",
+        "message": {
+            "update": {
+                "attribute": {
+                    "origin": "igp",
+                    "local-preference": 100,
+                    "bgp-ls": {
+                        "prefix-metric": 0
+                    }
+                },
+                "announce": {
+                    "bgp-ls bgp-ls": {
+                        "192.168.0.249": [
+                            {
+                                "ls-nlri-type": "bgpls-prefix-v4",
+                                "l3-routing-topology": 100,
+                                "protocol-id": 2,
+                                "node-descriptors": {
+                                    "autonomous-system": 100,
+                                    "bgp-ls-identifier": "3232235769",
+                                    "router-id": "111111111111"
+                                },
+                                "ip-reachability-tlv": "10.255.255.1",
+                                "ip-reach-prefix": "10.255.255.1/32",
+                                "nexthop": "192.168.0.249"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
