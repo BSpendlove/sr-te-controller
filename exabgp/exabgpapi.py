@@ -28,7 +28,11 @@ while True:
         # Parse message, and if it's the correct type, store in the database
         message = message_parser(line)
         if message:
-            requests.post(api_details["flask_api"], json=message)
+            api_url = api_details["flask_api"]
+            if message["type"] == "state":
+                requests.post("{}/exabgp/state".format(api_url), json=message)
+            if message["type"] == "update":
+                requests.post("{}/exabgp/update".format(api_url), json=message)
 
     except KeyboardInterrupt:
         pass
