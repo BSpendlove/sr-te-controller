@@ -6,12 +6,12 @@ RUN apk --no-cache add wget curl python3 python3-dev coreutils libffi-dev libc-d
     && apk --no-cache add --virtual build-dependencies build-base py3-pip \
     && pip3 install ipaddr exabgp ipy requests
 
-ADD entrypoint.sh /
+ADD ./entrypoint.sh /exabgp/
 COPY ./requirements.txt /exabgp/requirements.txt
 
 WORKDIR /exabgp
 RUN pip3 install -r requirements.txt
 COPY . /exabgp
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
 CMD ["exabgp"]

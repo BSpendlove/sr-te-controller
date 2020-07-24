@@ -1,7 +1,10 @@
 from flask import Flask, request
 import json
+import logging
 
 app = Flask(__name__)
+
+app.logger.setLevel(logging.DEBUG)
 
 @app.route("/api/v1/exabgp", methods=["POST"])
 def exabgp():
@@ -9,7 +12,7 @@ def exabgp():
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
     data = request.get_json()
-    print(json.dumps(data, indent=4))
+    app.logger.debug(json.dumps(data, indent=4))
 
     if data["type"] == "state":
         #Handle BGP State message

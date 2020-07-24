@@ -10,7 +10,7 @@ def message_parser(line):
 
     return temp_message
 
-api_details = env_file.get(path="/app/env/api")
+api_details = env_file.get(path="/exabgp/env/api")
 
 counter = 0
 while True:
