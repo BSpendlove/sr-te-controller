@@ -16,3 +16,13 @@ services:
     container_name: sdncontroller
     restart: always
 
+  exabgpdb:
+    image: mongo:latest
+    container_name: exabgp_mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "sdn"
+      MONGO_INITDB_ROOT_PASSWORD: "sdn123"
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongodb/data:/data/db
