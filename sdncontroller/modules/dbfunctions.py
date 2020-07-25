@@ -12,11 +12,14 @@ DEFAULT_DATABASE = mongo_client["exabgp"]
 def insert_state(state_msg):
     state = DEFAULT_DATABASE["state"]
     result = state.insert_one(json.loads(json_util.dumps(state_msg)))
-    app.logger.debug("Inserted 'state' message, returned _id is " + str(result.inserted_id))
     return result
 
 def insert_update(update_msg):
     update = DEFAULT_DATABASE["update"]
     result = update.insert_one(json.loads(json_util.dumps(update_msg)))
-    app.logger.debug("Inserted 'update' message, returned _id is " + str(result.inserted_id))
+    return result
+
+def initial_topology(topology):
+    topo = DEFAULT_DATABASE["initial_topology"]
+    result = topo.insert_one(json.loads(json_util.dumps(topology)))
     return result
