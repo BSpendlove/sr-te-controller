@@ -1,5 +1,6 @@
-from flask import Blueprint, request
 from app import app
+from flask import Blueprint, request
+from modules.dbfunctions import insert_state, insert_update
 import json
 import logging
 
@@ -13,10 +14,12 @@ def exabgp_state():
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
     data = request.get_json()
-    app.logger.debug(json.dumps(data, indent=4))
     #Sanity check to confirm message type is 'state' (eg neighbor state up/down/connect)
     if data["type"] == "state":
-        pass
+        app.logger.debug("Inserting 'state' message into database.\n{}".format(json.dumps(data, indent=4)))
+        result = insert_state(data)
+
+        data["_id"] = str(result.inserted_id)
 
     return data
 
@@ -26,10 +29,12 @@ def exabgp_update():
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
     data = request.get_json()
-    app.logger.debug(json.dumps(data, indent=4))
 
     #Sanity check to confirm message type is 'update' (eg. withdraw/announce update)
     if data["type"] == "update":
-        pass
+        app.logger.debug("Inserting 'update' message into database.\n{}".format(json.dumps(data, indent=4)))
+        result = insert_update(data)
+
+        data["_id"] = str(result.inserted_id)
 
     return data
