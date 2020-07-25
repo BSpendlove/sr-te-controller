@@ -4,6 +4,7 @@ services:
     build: ./exabgp
     ports:
       - "179:179"
+      - "5001:5001"
     volumes:
       - ./exabgp/exabgp.conf:/etc/exabgp/exabgp.conf
     container_name: exabgpapi

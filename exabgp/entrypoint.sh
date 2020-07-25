@@ -13,4 +13,3 @@ if [ ! -f /etc/exabgp/exabgp.env ]; then
 fi
 
 exabgp /etc/exabgp/exabgp.conf
-python3 /app/exabgpapi.py
