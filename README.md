@@ -2,6 +2,8 @@
 
 This is a fairly slow attempt in making some kind of python API that allows you to interact with the IS-IS network. The initial idea of this project was something like this:
 
+Initial idea topology/container configuration:
+![exabgp and API Example](/img/exabgp-sdn-controller-example.JPG)
 
 Have a container run exabgp and run BGP-LS AFI between the required routers in a network and the container, have a local flask API to query the exabgp API and display the IS-IS topology along with the ability to perform basic traffic engineering tasks (and even act as a simple dumb application for SR-TE instead of using PCEP)
 
