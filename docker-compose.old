@@ -9,8 +9,6 @@ services:
       - ./exabgp/exabgp.conf:/etc/exabgp/exabgp.conf
     container_name: exabgpapi
     restart: always
-    depends_on:
-     - "sdn_controller"
 
   sdn_controller:
     build: ./sdncontroller
@@ -20,7 +18,17 @@ services:
     restart: always
     volumes:
       - sdn_db:/app/db
-        
+
+  exabgpdb:
+    image: mongo:latest
+    container_name: exabgp_mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "sdn"
+      MONGO_INITDB_ROOT_PASSWORD: "sdn123"
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongodb/data:/data/db
 
 volumes:
   sdn_db:

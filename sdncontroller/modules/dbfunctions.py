@@ -1,25 +1,28 @@
-import env_file
-import json
-import pymongo
-from app import app
-from bson import json_util
+from app import app, db
+from models import (
+    Neighbor
+)
 
-env_creds = env_file.get(path="env/db")
-mongo_client = pymongo.MongoClient("mongodb://{}:{}@{}:27017/".format(env_creds["MONGO_USERNAME"], env_creds["MONGO_PASSWORD"], env_creds["MONGO_HOST"]))
+def db_add_neighbor(neighbor_data):
+    neighbor = Neighbor(neighbor_data=neighbor_data)
+    db.session.add(neighbor)
+    db.session.commit()
+    app.logger.debug("Added neighbor ({}) from database".format(neighbor))
+    return neighbor
 
-DEFAULT_DATABASE = mongo_client["exabgp"]
+def db_delete_neighbor(id):
+    neighbor = Neighbor.query.get(id)
+    db.session.delete(neighbor)
+    db.session.commit()
+    app.logger.debug("Deleted neighbor ({}) from database".format(neighbor))
+    return neighbor
 
-def insert_state(state_msg):
-    state = DEFAULT_DATABASE["state"]
-    result = state.insert_one(json.loads(json_util.dumps(state_msg)))
-    return result
+def db_get_neighbor(id):
+    neighbor = Neighbor.query.get(id)
+    app.logger.debug("Get neighbor ({}) from database".format(neighbor))
+    return neighbor
 
-def insert_update(update_msg):
-    update = DEFAULT_DATABASE["update"]
-    result = update.insert_one(json.loads(json_util.dumps(update_msg)))
-    return result
-
-def initial_topology(topology):
-    topo = DEFAULT_DATABASE["initial_topology"]
-    result = topo.insert_one(json.loads(json_util.dumps(topology)))
-    return result
+def db_delete_all_neighbors():
+    neighbors = db.session.query(Neighbor).delete()
+    app.logger.debug("Deleted all neighbors ({}) from database".format(neighbors))
+    return neighbors

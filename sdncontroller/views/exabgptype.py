@@ -1,6 +1,7 @@
 from app import app
 from flask import Blueprint, request
-from modules.dbfunctions import insert_state, insert_update, initial_topology
+from modules.dbfunctions import db_add_neighbor, db_delete_neighbor, db_get_neighbor
+from modules.ted import build_ted
 import json
 import logging
 
@@ -23,16 +24,14 @@ def exabgp_state():
     if data["type"] == "state":
         if data["neighbor"]["state"] == "up":
             app.logger.debug("Neighbor UP detected ({})... INITIAL_TOPOLOGY={}\n".format(data["host"], INITIAL_TOPOLOGY))
+            neighbor = db_add_neighbor(data)
             INITIAL_TOPOLOGY = True
             return data
 
         if data["neighbor"]["state"] == "down":
             app.logger.debug("Neighbor DOWN detected ({})... INITIAL_TOPOLOGY={}\n".format(data["host"], INITIAL_TOPOLOGY))
+            #Rewrite this code... to delete the correct neighbor...
             return data
-
-        result = insert_state(data)
-        app.logger.debug("Inserted 'state' message ({}) into database.\n{}".format(str(result.inserted_id), json.dumps(data, indent=4)))
-        data["_id"] = str(result.inserted_id)
 
     return data
 
@@ -45,21 +44,23 @@ def exabgp_update():
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
     data = request.get_json()
-
     #Sanity check to confirm message type is 'update' (eg. withdraw/announce update)
     if data["type"] == "update":
+        app.logger.debug("Received 'update' message from {}".format(data["neighbor"]["address"]["peer"]))
         if INITIAL_TOPOLOGY:
             TOPOLOGY.append(data)
             app.logger.debug("Appending 'initial_topology' message to TOPOLOGY.\n{}".format(json.dumps(data, indent=4)))
-            if "eor" in data["neighbor"]:
-                topology_id = initial_topology(TOPOLOGY)
+            if "eor" in data["neighbor"]["message"]:
                 INITIAL_TOPOLOGY = False
-                app.logger.debug("EOR detected ({}).\nInserted TOPOLOGY into initial_topology database. topology_id={},INITIAL_TOPOLOGY={}".format(data["host"], topology_id, INITIAL_TOPOLOGY))
-                return topology_id
-
-        result = insert_update(data)
-        app.logger.debug("Inserted 'update' message ({}) into database.\n{}".format(str(result.inserted_id), json.dumps(data, indent=4)))
-        data["_id"] = str(result.inserted_id)
+                new_topology = None
+                topology_id = 123
+                try:
+                    new_topology = build_ted(TOPOLOGY)
+                except Exception as error:
+                    app.logger.debug("Exception building TED topology: {}".format(error))
+                app.logger.debug("EOR detected ({}).\ntopology_id={},INITIAL_TOPOLOGY={}\nHere is what the topology looks like: {}".format(data["host"], topology_id, INITIAL_TOPOLOGY, json.dumps(new_topology, indent=4)))
+                topology_id=123
+                return {"ted_topology": new_topology }
 
     return data
 
