@@ -3,21 +3,6 @@ import time
 import json
 
 ### Work in progress - These functions don't work correctly/or won't work at all
-
-def build_ted(initial_topology):
-    app.logger.debug("Initial TED is being built, current state: {} (type = {})".format(json.dumps(initial_topology, indent=4), type(initial_topology)))
-    new_topology = validate_same_neighbor(initial_topology)
-    if new_topology:
-        for update in initial_topology:
-            app.logger.debug("Per topology {}..\nType is {}".format(json.dumps(update, indent=4), type(update)))
-            if "eor" in update["neighbor"]["message"]:
-                return new_topology
-            app.logger.debug("lsp: {}".format(json.dumps(update["neighbor"]["message"]["update"], indent=4)))
-            for lsp in update["neighbor"]["message"]["bgp-ls"]["announce"]["bgp-ls bgp-ls"]:
-                lsp.update({"attribute": update["neighbor"]["message"]["update"]["attribute"]})
-
-    return new_topology
-
 def validate_same_neighbor(topology):
     first_update_host = topology[0]["host"] #Check first input on host
     first_update_neighbor_local = topology[0]["neighbor"]["address"]["local"] #Check first input on neighbor address local
@@ -32,7 +17,53 @@ def validate_same_neighbor(topology):
         if not update["neighbor"]["address"]["peer"] == first_update_neighbor_remote:
             return False
 
-    return {"exabgp": topology[0]["exabgp"],
-            "time": time.time(),
-            "host": topology[0]["host"],
-            "neighbors": []}
+    return True
+
+def build_ted(topology):
+    nodes = []
+    links = []
+    prefixes = []
+
+    if validate_same_neighbor(topology):
+        for update in topology:
+            peer_ip = update["neighbor"]["address"]["peer"]
+            if "eor" in str(update["neighbor"]["message"]):
+                break
+            for announcement in update["neighbor"]["message"]["update"]["announce"]["bgp-ls bgp-ls"][peer_ip]:
+                if "bgpls-node" == announcement["ls-nlri-type"]:
+                    node_descriptor = announcement["node-descriptors"]
+                    app.logger.debug("Node descriptor is {}".format(node_descriptor))
+                    node_id = "{}{}{}".format(node_descriptor["autonomous-system"], node_descriptor["bgp-ls-identifier"], node_descriptor["router-id"])
+                    node = {"node": node_id,
+                            "node_details": announcement,
+                            "node_attributes": update["neighbor"]["message"]["update"]["attribute"],
+                            "links": [],
+                            "prefixes": []}
+                    nodes.append(node)
+                if "bgpls-link" == announcement["ls-nlri-type"]:
+                    link = {"link": announcement, "link_attributes": update["neighbor"]["message"]["update"]["attribute"]}
+                    links.append(link)
+                if "bgpls-prefix-v4" == announcement["ls-nlri-type"]:
+                    prefix = {"prefix": announcement, "prefix_attributes": update["neighbor"]["message"]["update"]["attribute"]}
+                    prefixes.append(prefix)
+
+    full_topology = []
+
+    for entry_node in nodes:
+        entry_node["links"] = []
+        entry_node["prefixes"] = []
+        #node_descriptor = entry_node["node_details"]["node-descriptors"]
+        #node_id = "{}{}{}".format(node_descriptor["autonomous-system"], node_descriptor["bgp-ls-identifier"], node_descriptor["router-id"])
+        app.logger.debug("Found node ({})".format(node_id))
+        for entry_link in links:
+            link_descriptor = entry_link["link"]["local-node-descriptors"]
+            link_node_id = "{}{}{}".format(link_descriptor["autonomous-system"], link_descriptor["bgp-ls-identifier"], link_descriptor["router-id"])
+            if link_node_id == entry_node["node"]:
+                entry_node["links"].append(entry_link)
+        for entry_prefix in prefixes:
+            prefix_descriptor = entry_prefix["prefix"]["node-descriptors"]
+            prefix_node_id = "{}{}{}".format(prefix_descriptor["autonomous-system"], prefix_descriptor["bgp-ls-identifier"], prefix_descriptor["router-id"])
+            if prefix_node_id == entry_node["node"]:
+                entry_node["prefixes"].append(entry_prefix)
+        full_topology.append(entry_node)
+    return full_topology

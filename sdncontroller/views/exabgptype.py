@@ -57,9 +57,12 @@ def exabgp_update():
                 try:
                     new_topology = build_ted(TOPOLOGY)
                 except Exception as error:
-                    app.logger.debug("Exception building TED topology: {}".format(error))
-                app.logger.debug("EOR detected ({}).\ntopology_id={},INITIAL_TOPOLOGY={}\nHere is what the topology looks like: {}".format(data["host"], topology_id, INITIAL_TOPOLOGY, json.dumps(new_topology, indent=4)))
-                topology_id=123
+                    app.logger.debug("Exception building TED/topology: {}".format(error))
+                app.logger.debug("EOR detected ({}).\nINITIAL_TOPOLOGY={}\nHere is what the topology looks like: {}".format(data["host"], INITIAL_TOPOLOGY, json.dumps(new_topology, indent=4)))
+                if new_topology:
+                    topology_id=1
+                    if topology_id:
+                        app.logger.debug("Successfully generated TED/Topology... Datbase ID = {}".format(topology_id))
                 return {"ted_topology": new_topology }
 
     return data

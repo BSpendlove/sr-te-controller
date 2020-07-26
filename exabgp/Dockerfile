@@ -14,4 +14,3 @@ RUN pip3 install -r requirements.txt
 COPY . /exabgp
 
 ENTRYPOINT ["./entrypoint.sh"]
-CMD ["exabgp"]
