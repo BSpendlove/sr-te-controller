@@ -1,30 +1,33 @@
 import time
 import json
-from example_outputs.topo1 import topo1
+from example_outputs.topo3 import topo3
 from graphviz import Digraph
 
 node_data = []
 
-for node in topo1:
-    node_topology = {}
-    print("Found node: " + node["node_id"])
+for node in topo3:
+    print("\n\nFound node: " + node["node_id"])
     for link in node["links"]:
         remote_descriptor = link["link"]["remote-node-descriptors"]
         remote_node = "{}{}{}".format(remote_descriptor["autonomous-system"], remote_descriptor["bgp-ls-identifier"], remote_descriptor["router-id"])
-        node_topology["local_node_id"] = node["node_id"]
-        node_topology["remote_node_id"] = remote_node
-        node_topology["local_ip"] = link["link"]["interface-address"]["interface-address"]
-        node_topology["remote_ip"] = link["link"]["neighbor-address"]["neighbor-address"]
-        node_topology["te_metric"] = link["link_attributes"]["bgp-ls"]["te-metric"]
-        node_topology["igp_metric"] = link["link_attributes"]["bgp-ls"]["igp-metric"]
-    node_data.append(node_topology)
+        node_topology = {
+            "local_node_id": node["node_id"],
+            "remote_node_id": remote_node,
+            "local_ip": link["link"]["interface-address"]["interface-address"],
+            "remote_ip": link["link"]["neighbor-address"]["neighbor-address"],
+            "te_metric": link["link_attributes"]["bgp-ls"]["te-metric"],
+            "igp_metric": link["link_attributes"]["bgp-ls"]["igp-metric"]
+        }
+        node_data.append(node_topology)
+
+for connect in node_data:
+    print(connect)
 
 g = Digraph('G', filename='test.gv')
 for connection in node_data:
     g.edge(connection["local_node_id"], connection["remote_node_id"])
 
 g.view()
-#print(json.dumps(node_data, indent=4))
 
 """
 def validate_same_neighbor(topology):
