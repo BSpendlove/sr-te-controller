@@ -36,6 +36,56 @@ topo3 = [
                      "remote-node-descriptors": {
                          "autonomous-system": 100,
                          "bgp-ls-identifier": "3232235769",
+                         "router-id": "000000000006"
+                     },
+                     "interface-address": {
+                         "interface-address": "10.0.69.9"
+                     },
+                     "neighbor-address": {
+                         "neighbor-address": "10.0.69.6"
+                     }
+                 },
+                 "link_attributes": {
+                     "origin": "igp",
+                     "local-preference": 100,
+                     "bgp-ls": {
+                         "local-te-router-ids": [
+                             "10.255.255.9"
+                         ],
+                         "remote-te-router-id": "10.255.255.6",
+                         "admin-group-mask": [
+                             0
+                         ],
+                         "maximum-link-bandwidth": 125000000.0,
+                         "maximum-reservable-link-bandwidth": 0.0,
+                         "unreserved-bandwidth": [
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0
+                         ],
+                         "te-metric": 10,
+                         "igp-metric": 10
+                     }
+                 }
+             },
+             {
+                 "link": {
+                     "ls-nlri-type": "bgpls-link",
+                     "l3-routing-topology": 100,
+                     "protocol-id": 2,
+                     "local-node-descriptors": {
+                         "autonomous-system": 100,
+                         "bgp-ls-identifier": "3232235769",
+                         "router-id": "000000000009"
+                     },
+                     "remote-node-descriptors": {
+                         "autonomous-system": 100,
+                         "bgp-ls-identifier": "3232235769",
                          "router-id": "000000000008"
                      },
                      "interface-address": {
@@ -446,6 +496,56 @@ topo3 = [
                      "remote-node-descriptors": {
                          "autonomous-system": 100,
                          "bgp-ls-identifier": "3232235769",
+                         "router-id": "000000000004"
+                     },
+                     "interface-address": {
+                         "interface-address": "10.0.47.7"
+                     },
+                     "neighbor-address": {
+                         "neighbor-address": "10.0.47.4"
+                     }
+                 },
+                 "link_attributes": {
+                     "origin": "igp",
+                     "local-preference": 100,
+                     "bgp-ls": {
+                         "local-te-router-ids": [
+                             "10.255.255.7"
+                         ],
+                         "remote-te-router-id": "10.255.255.4",
+                         "admin-group-mask": [
+                             0
+                         ],
+                         "maximum-link-bandwidth": 125000000.0,
+                         "maximum-reservable-link-bandwidth": 0.0,
+                         "unreserved-bandwidth": [
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0
+                         ],
+                         "te-metric": 10,
+                         "igp-metric": 10
+                     }
+                 }
+             },
+             {
+                 "link": {
+                     "ls-nlri-type": "bgpls-link",
+                     "l3-routing-topology": 100,
+                     "protocol-id": 2,
+                     "local-node-descriptors": {
+                         "autonomous-system": 100,
+                         "bgp-ls-identifier": "3232235769",
+                         "router-id": "000000000007"
+                     },
+                     "remote-node-descriptors": {
+                         "autonomous-system": 100,
+                         "bgp-ls-identifier": "3232235769",
                          "router-id": "000000000008"
                      },
                      "interface-address": {
@@ -590,6 +690,56 @@ topo3 = [
                      "remote-node-descriptors": {
                          "autonomous-system": 100,
                          "bgp-ls-identifier": "3232235769",
+                         "router-id": "000000000009"
+                     },
+                     "interface-address": {
+                         "interface-address": "10.0.69.6"
+                     },
+                     "neighbor-address": {
+                         "neighbor-address": "10.0.69.9"
+                     }
+                 },
+                 "link_attributes": {
+                     "origin": "igp",
+                     "local-preference": 100,
+                     "bgp-ls": {
+                         "local-te-router-ids": [
+                             "10.255.255.6"
+                         ],
+                         "remote-te-router-id": "10.255.255.9",
+                         "admin-group-mask": [
+                             0
+                         ],
+                         "maximum-link-bandwidth": 125000000.0,
+                         "maximum-reservable-link-bandwidth": 0.0,
+                         "unreserved-bandwidth": [
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0
+                         ],
+                         "te-metric": 10,
+                         "igp-metric": 10
+                     }
+                 }
+             },
+             {
+                 "link": {
+                     "ls-nlri-type": "bgpls-link",
+                     "l3-routing-topology": 100,
+                     "protocol-id": 2,
+                     "local-node-descriptors": {
+                         "autonomous-system": 100,
+                         "bgp-ls-identifier": "3232235769",
+                         "router-id": "000000000006"
+                     },
+                     "remote-node-descriptors": {
+                         "autonomous-system": 100,
+                         "bgp-ls-identifier": "3232235769",
                          "router-id": "000000000008"
                      },
                      "interface-address": {
@@ -698,6 +848,28 @@ topo3 = [
                      "local-preference": 100,
                      "bgp-ls": {
                          "prefix-metric": 0
+                     }
+                 }
+             },
+             {
+                 "prefix": {
+                     "ls-nlri-type": "bgpls-prefix-v4",
+                     "l3-routing-topology": 100,
+                     "protocol-id": 2,
+                     "node-descriptors": {
+                         "autonomous-system": 100,
+                         "bgp-ls-identifier": "3232235769",
+                         "router-id": "000000000006"
+                     },
+                     "ip-reachability-tlv": "10.0.69.0",
+                     "ip-reach-prefix": "10.0.69.0/24",
+                     "nexthop": "192.168.0.249"
+                 },
+                 "prefix_attributes": {
+                     "origin": "igp",
+                     "local-preference": 100,
+                     "bgp-ls": {
+                         "prefix-metric": 10
                      }
                  }
              },
@@ -965,6 +1137,56 @@ topo3 = [
              }
          },
          "links": [
+             {
+                 "link": {
+                     "ls-nlri-type": "bgpls-link",
+                     "l3-routing-topology": 100,
+                     "protocol-id": 2,
+                     "local-node-descriptors": {
+                         "autonomous-system": 100,
+                         "bgp-ls-identifier": "3232235769",
+                         "router-id": "000000000004"
+                     },
+                     "remote-node-descriptors": {
+                         "autonomous-system": 100,
+                         "bgp-ls-identifier": "3232235769",
+                         "router-id": "000000000007"
+                     },
+                     "interface-address": {
+                         "interface-address": "10.0.47.4"
+                     },
+                     "neighbor-address": {
+                         "neighbor-address": "10.0.47.7"
+                     }
+                 },
+                 "link_attributes": {
+                     "origin": "igp",
+                     "local-preference": 100,
+                     "bgp-ls": {
+                         "local-te-router-ids": [
+                             "10.255.255.4"
+                         ],
+                         "remote-te-router-id": "10.255.255.7",
+                         "admin-group-mask": [
+                             0
+                         ],
+                         "maximum-link-bandwidth": 125000000.0,
+                         "maximum-reservable-link-bandwidth": 0.0,
+                         "unreserved-bandwidth": [
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0,
+                             0.0
+                         ],
+                         "te-metric": 10,
+                         "igp-metric": 10
+                     }
+                 }
+             },
              {
                  "link": {
                      "ls-nlri-type": "bgpls-link",
