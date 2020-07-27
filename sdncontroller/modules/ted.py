@@ -34,7 +34,8 @@ def build_ted(topology):
                     node_descriptor = announcement["node-descriptors"]
                     app.logger.debug("Node descriptor is {}".format(node_descriptor))
                     node_id = "{}{}{}".format(node_descriptor["autonomous-system"], node_descriptor["bgp-ls-identifier"], node_descriptor["router-id"])
-                    node = {"node": node_id,
+                    # I am generating a node_id because this should be unique in the whole network, using the AS + BGPLS ID + BGP RID I think will guarantee
+                    node = {"node_id": node_id,
                             "node_details": announcement,
                             "node_attributes": update["neighbor"]["message"]["update"]["attribute"],
                             "links": [],

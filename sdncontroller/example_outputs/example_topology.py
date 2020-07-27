@@ -1,3 +1,6 @@
+# This topology is what is to be expected after gathering all UPDATEs after a neighbor has come UP and we receive the EOR (end of RIB) - eg. the end of the BGP update...
+# This is not a topology built with the 'build_ted' function, so you can use this topology to build the TED if you make any changes to that function and want sample data to work with...
+
 json_topology = [
 {
     "exabgp": "4.0.1",
