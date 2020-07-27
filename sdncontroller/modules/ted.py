@@ -59,12 +59,12 @@ def build_ted(topology):
         for entry_link in links:
             link_descriptor = entry_link["link"]["local-node-descriptors"]
             link_node_id = "{}{}{}".format(link_descriptor["autonomous-system"], link_descriptor["bgp-ls-identifier"], link_descriptor["router-id"])
-            if link_node_id == entry_node["node"]:
+            if link_node_id == entry_node["node_id"]:
                 entry_node["links"].append(entry_link)
         for entry_prefix in prefixes:
             prefix_descriptor = entry_prefix["prefix"]["node-descriptors"]
             prefix_node_id = "{}{}{}".format(prefix_descriptor["autonomous-system"], prefix_descriptor["bgp-ls-identifier"], prefix_descriptor["router-id"])
-            if prefix_node_id == entry_node["node"]:
+            if prefix_node_id == entry_node["node_id"]:
                 entry_node["prefixes"].append(entry_prefix)
         full_topology.append(entry_node)
     return full_topology
