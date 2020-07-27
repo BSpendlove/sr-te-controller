@@ -68,3 +68,17 @@ def build_ted(topology):
                 entry_node["prefixes"].append(entry_prefix)
         full_topology.append(entry_node)
     return full_topology
+
+def modify_ted(topology):
+
+    return None
+
+def generate_ted_id(update):
+    initial_id = "{}{}{}{}".format(
+        update["neighbor"]["asn"]["local"],
+        update["neighbor"]["address"]["local"],
+        update["neighbor"]["asn"]["peer"],
+        update["neighbor"]["address"]["peer"]
+    )
+
+    return initial_id.replace(".","")

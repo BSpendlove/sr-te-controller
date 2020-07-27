@@ -9,3 +9,11 @@ class Neighbor(db.Model):
 
     def __repr__(self):
         return '<ExaBGP Neighbor {}>'.format(self.id)
+
+class TED(db.Model):
+    """ TED Model """
+    id = db.Column(db.String, primary_key=True) # Rest in peace... Currently using local AS + local IP + remote AS + remote IP to identify the unique TED
+    ted = db.Column(JsonEncodedDict)
+
+    def __repr__(self):
+        return '<ExaBGP TED {}>'.format(self.id)

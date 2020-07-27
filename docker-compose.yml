@@ -20,7 +20,6 @@ services:
     restart: always
     volumes:
       - sdn_db:/app/db
-        
 
 volumes:
   sdn_db:
