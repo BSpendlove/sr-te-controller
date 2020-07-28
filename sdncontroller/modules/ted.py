@@ -70,7 +70,6 @@ def build_ted(topology):
     return full_topology
 
 def modify_ted(topology):
-
     return None
 
 def generate_ted_id(update):

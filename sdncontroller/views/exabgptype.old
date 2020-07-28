@@ -1,13 +1,6 @@
 from app import app
 from flask import Blueprint, request
-from modules import dbfunctions
-from modules.bgp_message_handler import (
-    create_bgp_state,
-    create_bgp_node,
-    create_bgp_link,
-    create_bgp_prefix_v4,
-    create_bgp_prefix_v6
-)
+from modules.ted import build_ted, modify_ted, generate_ted_id
 import json
 import logging
 
@@ -15,8 +8,13 @@ app.logger.setLevel(logging.DEBUG)
 
 bp = Blueprint("exabgp", __name__, url_prefix="/exabgp")
 
+INITIAL_TOPOLOGY = False
+TOPOLOGY = []
+
 @bp.route("/state", methods=["POST"])
 def exabgp_state():
+    global INITIAL_TOPOLOGY
+
     if not request.is_json:
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
@@ -24,21 +22,32 @@ def exabgp_state():
     #Sanity check to confirm message type is 'state' (eg neighbor state up/down/connect)
     if data["type"] == "state":
         if data["neighbor"]["state"] == "up":
-            app.logger.debug("Neighbor UP detected ({})...".format(data["host"]))
-            bgp_state = create_bgp_state(data)
-            app.logger.debug("BGP State created for database...\n{}".format(json.dumps(bgp_state, indent=4)))
-            #dbfunctions.add_bgp_state(bgp_state)
+            app.logger.debug("Neighbor UP detected ({})... INITIAL_TOPOLOGY={}\nData Type is: {}".format(data["host"], INITIAL_TOPOLOGY, type(data)))
+            #neighbor = db_add_neighbor(data)
+            INITIAL_TOPOLOGY = True
             return data
 
         if data["neighbor"]["state"] == "down":
-            app.logger.debug("Neighbor DOWN detected ({})...".format(data["host"]))
+            app.logger.debug("Neighbor DOWN detected ({})... INITIAL_TOPOLOGY={}\n".format(data["host"], INITIAL_TOPOLOGY))
             ted_id = generate_ted_id(data)
+            try:
+                if db_get_ted(ted_id):
+                    #delete_ted = db_delete_ted(ted_id)
+                    app.logger.debug("Successfully deleted TED ({})".format(ted_id))
+                else:
+                    app.logger.debug("TED ID ({}) does not exist in database...".format(ted_id))
+            except:
+                app.logger.debug("Unable to delete TED ({})".format(ted_id))
+            #Rewrite this code... to delete the correct neighbor...
             return data
 
     return data
 
 @bp.route("/update", methods=["POST"])
 def exabgp_update():
+    global INITIAL_TOPOLOGY
+    global TOPOLOGY
+
     if not request.is_json:
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
@@ -46,7 +55,6 @@ def exabgp_update():
     #Sanity check to confirm message type is 'update' (eg. withdraw/announce update)
     if data["type"] == "update":
         app.logger.debug("Received 'update' message from {}.".format(data["neighbor"]["address"]["peer"]))
-        """
         if INITIAL_TOPOLOGY:
             TOPOLOGY.append(data)
             #app.logger.debug("Appending 'initial_topology' message to TOPOLOGY.\n{}".format(json.dumps(data, indent=4)))
@@ -73,6 +81,11 @@ def exabgp_update():
             app.logger.debug("UPDATE message json dump:\n{}".format(data))
             ted_id = generate_ted_id(data)
             app.logger.debug("Generate ted_id ({}) from update...".format(ted_id))
+            """
+            try:
+                modify_ted(data)
+            except Exception as error:
+                app.logger.debug("Exception modifying TED/topology: {}".format(error))
             """
     return data
 

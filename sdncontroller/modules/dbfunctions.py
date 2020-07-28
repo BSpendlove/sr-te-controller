@@ -1,63 +1,80 @@
 from app import app, db
 from models import (
-    Neighbor,
-    TED
+    BGPNeighborship
+    BGPLSNode,
+    BGPLSLink,
+    BGPLSPrefixV4
 )
 
-def db_add_neighbor(neighbor_data):
-    neighbor = Neighbor(neighbor_data=neighbor_data)
-    db.session.add(neighbor)
+def add_bgp_state(update):
+    neighborship = BGPNeighborship(**update)
+    db.session.add(neighborship)
     db.session.commit()
-    app.logger.debug("Added neighbor ({}) to database".format(neighbor))
-    return neighbor
+    return neighborship
 
-def db_delete_neighbor(id):
-    neighbor = Neighbor.query.get(id)
-    db.session.delete(neighbor)
+def get_bgp_state(id):
+    neighborship = BGPNeighborship.query.filter_by(id).first()
+    return neighborship
+
+def get_bgp_states_all():
+    all_neighborships = BGPNeighborship.query.all()
+    return all_neighborships
+
+def delete_bgp_states_all():
+    all_neighborships = BGPNeighborship.query.delete()
     db.session.commit()
-    app.logger.debug("Deleted neighbor ({}) from database".format(neighbor))
-    return neighbor
+    return all_neighborships
 
-def db_get_neighbor(id):
-    neighbor = Neighbor.query.get(id)
-    app.logger.debug("Get neighbor ({}) from database".format(neighbor))
-    return neighbor
-
-def db_delete_all_neighbors():
-    neighbors = db.session.query(Neighbor).delete()
-    app.logger.debug("Deleted all neighbors ({}) from database".format(neighbors))
-    return neighbors
-
-def db_add_ted(id, ted):
-    topology = None
-    new_topology = {}
-    if isinstance(ted, list):
-        for node in ted:
-            node_id = node["node_id"]
-            new_topology[node_id] = node
-        topology = TED(id=id, ted=new_topology)
-    else:
-        topology = TED(id=id, ted=ted)
-    db.session.add(topology)
+def add_bgpls_node(node_id):
+    node = BGPLSNode(node_id=node_id)
+    db.session.add(node)
     db.session.commit()
-    app.logger.debug("Added TED ({}) to database".format(topology))
-    return topology
+    return node
 
-def db_delete_ted(id):
-    topology = TED.query.get(id)
-    db.session.delete(topology)
+def delete_bgpls_node(id):
+    return BGPLSNode.query.filter_by(id).delete()
+
+def get_bgpls_node(node_id):
+    node = BGPLSNode.query.filter_by(node_id=node_id).first()
+    return node
+
+def get_bgpls_nodes_all():
+    all_nodes = BGPLSNode.query.all()
+    return all_nodes
+
+def delete_bgpls_nodes_all():
+    nodes = BGPLSNode.query.delete()
     db.session.commit()
-    app.logger.debug("Deleted TED ({}) from database".format(topology))
-    return topology
+    return nodes
 
-def db_get_ted(id):
-    topology = TED.query.get(id)
-    app.logger.debug("Get TED ({}) from database".format(id))
-    return topology
-
-def db_modify_ted(id, ted):
-    topology = TED.query.get(id)
-    topology.ted = ted
+def add_bgpls_link(node, link):
+    node.bgpls_links.append(link)
     db.session.commit()
-    app.logger.debug("Modified TED ({}) from database".format(topology))
-    return topology
+    return link
+
+def delete_bgpls_link(id):
+    return BGPLSLink.query.filter_by(id=id).delete()
+
+def get_bgpls_link(id):
+    link = BGPLSLink.query.get(id)
+    return link
+
+def get_bgpls_links_all(node_id):
+    links = BGPLSLink.query.filter_by(node_id=node_id)
+    return links
+
+def add_bgpls_prefix(node, prefix):
+    note.bgpls_prefixes.append(prefix)
+    db.session.commit()
+    return prefix
+
+def delete_bgpls_prefix(id):
+    return BGPLSPrefixV4.query.filter_by(id).delete()
+
+def get_bgpls_prefix(id):
+    prefix = BGPLSPrefixV4.query.get(id)
+    return prefix
+
+def get_bgpls_prefixes_all(node_id):
+    prefixes = BGPLSPrefixV4.query.filter_by(node_id=node_id)
+    return prefixes
