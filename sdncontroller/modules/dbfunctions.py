@@ -1,6 +1,6 @@
 from app import app, db
 from models import (
-    BGPNeighborship
+    BGPNeighborship,
     BGPLSNode,
     BGPLSLink,
     BGPLSPrefixV4
@@ -25,8 +25,8 @@ def delete_bgp_states_all():
     db.session.commit()
     return all_neighborships
 
-def add_bgpls_node(node_id):
-    node = BGPLSNode(node_id=node_id)
+def add_bgpls_node(update):
+    node = BGPLSNode(**update)
     db.session.add(node)
     db.session.commit()
     return node
@@ -48,6 +48,8 @@ def delete_bgpls_nodes_all():
     return nodes
 
 def add_bgpls_link(node, link):
+    if isinstance(node, str):
+        node = get_bgpls_node(node_id=node)
     node.bgpls_links.append(link)
     db.session.commit()
     return link

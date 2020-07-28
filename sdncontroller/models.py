@@ -1,4 +1,7 @@
-from app import db
+from flask_sqlalchemy import SQLAlchemy
+from __main__ import app
+
+db = SQLAlchemy(app)
 
 class BGPNeighborship(db.Model):
     __tablename__ = "bgpneighborship"

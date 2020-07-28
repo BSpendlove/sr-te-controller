@@ -6,7 +6,8 @@ from modules.bgp_message_handler import (
     create_bgp_node,
     create_bgp_link,
     create_bgp_prefix_v4,
-    create_bgp_prefix_v6
+    create_bgp_prefix_v6,
+    find_node_id_from_link_update
 )
 import json
 import logging
@@ -14,6 +15,11 @@ import logging
 app.logger.setLevel(logging.DEBUG)
 
 bp = Blueprint("exabgp", __name__, url_prefix="/exabgp")
+
+@bp.route("/check_nodes", methods=["GET"])
+def get_nodes():
+    nodes = dbfunctions.get_bgpls_nodes_all()
+    return {"nodes": [node.as_dict() for node in nodes]}
 
 @bp.route("/state", methods=["POST"])
 def exabgp_state():
@@ -27,12 +33,15 @@ def exabgp_state():
             app.logger.debug("Neighbor UP detected ({})...".format(data["host"]))
             bgp_state = create_bgp_state(data)
             app.logger.debug("BGP State created for database...\n{}".format(json.dumps(bgp_state, indent=4)))
-            #dbfunctions.add_bgp_state(bgp_state)
+            state = dbfunctions.add_bgp_state(bgp_state)
+            if state:
+                app.logger.debug("Added BGP State into database...\n{}".format(json.dumps(state.as_dict(), indent=4)))
+            else:
+                app.logger.debug("Unable to add BGP State into database...")
             return data
 
         if data["neighbor"]["state"] == "down":
             app.logger.debug("Neighbor DOWN detected ({})...".format(data["host"]))
-            ted_id = generate_ted_id(data)
             return data
 
     return data
@@ -46,6 +55,20 @@ def exabgp_update():
     #Sanity check to confirm message type is 'update' (eg. withdraw/announce update)
     if data["type"] == "update":
         app.logger.debug("Received 'update' message from {}.".format(data["neighbor"]["address"]["peer"]))
+        if "bgpls-node" in str(data):
+            #Node Information
+            bgp_node = create_bgp_node(data)
+            app.logger.debug("BGP Node created for database...\n{}".format(json.dumps(bgp_node, indent=4)))
+            node = dbfunctions.add_bgpls_node(bgp_node)
+            app.logger.debug("Added BGP Node into database...\n{}".format(json.dumps(node.as_dict(), indent=4)))
+        if "bgpls-link" in str(data):
+            bgp_link = create_bgp_link(data)
+            app.logger.debug("BGP Link created for database...\n{}".format(json.dumps(bgp_link, indent=4)))
+            node_id = find_node_id_from_link_update(data)
+            app.logger.debug("node_id is: {}".format(node_id))
+            if node_id:
+                link = dbfunctions.add_bgpls_link(node_id, bgp_link)
+                app.logger.debug("Added BGP Link into database...\n{}".format(json.dumps(link.as_dict(), indent=4)))
         """
         if INITIAL_TOPOLOGY:
             TOPOLOGY.append(data)
