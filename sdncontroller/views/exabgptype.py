@@ -55,6 +55,10 @@ def exabgp_update():
     #Sanity check to confirm message type is 'update' (eg. withdraw/announce update)
     if data["type"] == "update":
         app.logger.debug("Received 'update' message from {}.".format(data["neighbor"]["address"]["peer"]))
+        app.logger.debug("Data Output debug:\n{}".format(json.dumps(data, indent=4)))
+        if "withdraw" in str(data):
+            app.logger.debug("Withdraw detected...")
+            return dbfunctions.withdraw_update(data)
         if "bgpls-node" in str(data):
             #Node Information
             bgp_node = create_bgp_node(data)
@@ -66,9 +70,8 @@ def exabgp_update():
             app.logger.debug("BGP Link created for database...\n{}".format(json.dumps(bgp_link, indent=4)))
             node_id = find_node_id_from_link_update(data)
             app.logger.debug("node_id is: {}".format(node_id))
-            if node_id:
-                link = dbfunctions.add_bgpls_link(node_id, bgp_link)
-                app.logger.debug("Added BGP Link into database...\n{}".format(json.dumps(link.as_dict(), indent=4)))
+            link = dbfunctions.add_bgpls_link(node_id, bgp_link)
+            app.logger.debug("Added BGP Link into database...\n{}".format(json.dumps(link.as_dict(), indent=4)))
         """
         if INITIAL_TOPOLOGY:
             TOPOLOGY.append(data)

@@ -1,11 +1,20 @@
 def find_node_id_from_link_update(update):
     peer_ip = update["neighbor"]["address"]["peer"]
     peer_bgpls_info = update["neighbor"]["message"]["update"]["announce"]["bgp-ls bgp-ls"][peer_ip][0]
-    peer_attribute_info = update["neighbor"]["message"]["update"]["attribute"]
     node_id = "{}{}{}".format(
         peer_bgpls_info["local-node-descriptors"]["autonomous-system"],
         peer_bgpls_info["local-node-descriptors"]["bgp-ls-identifier"],
         peer_bgpls_info["local-node-descriptors"]["router-id"]
+    )
+    return node_id
+
+def find_node_id_from_node_update(update):
+    peer_ip = update["neighbor"]["address"]["peer"]
+    peer_bgpls_info = update["neighbor"]["message"]["update"]["announce"]["bgp-ls bgp-ls"][peer_ip][0]
+    node_id = "{}{}{}".format(
+        peer_bgpls_info["node-descriptors"]["autonomous-system"],
+        peer_bgpls_info["node-descriptors"]["bgp-ls-identifier"],
+        peer_bgpls_info["node-descriptors"]["router-id"]
     )
     return node_id
 
@@ -78,7 +87,7 @@ def create_bgp_link(update):
         "admin_group_mask": str(peer_attribute_info["bgp-ls"]["admin-group-mask"]),
         "maximum_link_bandwidth": peer_attribute_info["bgp-ls"]["maximum-link-bandwidth"],
         "maximum_reservable_bandwidth": peer_attribute_info["bgp-ls"]["maximum-reservable-link-bandwidth"],
-        "unreserved-bandwidth": str(peer_attribute_info["bgp-ls"]["unreserved-bandwidth"]),
+        "unreserved_bandwidth": str(peer_attribute_info["bgp-ls"]["unreserved-bandwidth"]),
         "te_metric": peer_attribute_info["bgp-ls"]["te-metric"],
         "igp_metric": peer_attribute_info["bgp-ls"]["igp-metric"]
     }

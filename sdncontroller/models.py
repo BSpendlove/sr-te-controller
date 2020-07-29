@@ -170,6 +170,7 @@ class BGPLSPrefixV4(db.Model):
     node_id = db.Column(db.Integer, db.ForeignKey('bgplsnode.id'))
     l3_nlri_type = db.Column(db.String)
     l3_routing_topology = db.Column(db.Integer)
+    protocol_id = db.Column(db.Integer)
     local_asn = db.Column(db.Integer)
     local_bgp_ls_id = db.Column(db.String)
     local_router_id = db.Column(db.String)
