@@ -1,4 +1,5 @@
 from app import app
+from modules import dbfunctions
 import time
 import json
 
@@ -71,6 +72,28 @@ def build_ted(topology):
 
 def modify_ted(topology):
     return None
+
+def build_visual_ted(topology):
+    """ function is based on topology generated via database models """
+    vis_nodes = []
+    vis_edges = []
+    for node in topology:
+        node_data = {
+            "id": node["id"],
+            "label": node["node_details"]["node_attributes"]["bgp-ls"]["local-te-router-ids"]
+        }
+        vis_nodes.append(node_data)
+        for link in node["node_details"]["links"]:
+            remote_link = dbfunctions.get_bgpls_link_remote_node(link["id"])
+            link_data = {
+                "from": link["node_id"],
+                "to": remote_link,
+                "label": link["link"]["interface-address"]["interface-address"],
+                "length": 300
+            }
+            vis_edges.append(link_data)
+
+    return {"nodes": vis_nodes, "edges": vis_edges}
 
 def generate_ted_id(update):
     initial_id = "{}{}{}{}".format(

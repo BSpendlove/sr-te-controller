@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>{% block title %}{%endblock%} - SR SDN Controller</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css">
+        {% block head_scripts %}
+        {% endblock %}
+    </head>
+
+    {% block navbar %}
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <ul class="navbar-nav">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Logo</a>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                  Home
+                </a>
+                <div class="dropdown-menu">
+                  <a class="dropdown-item" href="#">SR-TE Map</a>
+                  <a class="dropdown-item" href="#">API</a>
+                </div>
+            </li>
+          </ul>
+    </nav>
+    {% endblock %}
+
+    {% block body %}
+        {% block content %}
+            <div class="container">
+                {% for message in get_flashed_messages() %}
+                    <div class="alert alert-info">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                {% block app_content %}{% endblock %}
+            </div>
+        {% endblock %}
+
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+        {% block scripts %}{% endblock %}
+    {% endblock %}
+</html>

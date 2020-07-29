@@ -96,6 +96,28 @@ def get_bgpls_link(id):
     link = BGPLSLink.query.get(id)
     return link
 
+def get_bgpls_link_remote_node(id):
+    link = BGPLSLink.query.get(id)
+    app.logger.debug("get_bgpls_link_remote_node (link): {}".format(link))
+    if link:
+        remote_link = BGPLSLink.query.filter_by(
+            l3_routing_topology=link.l3_routing_topology,
+            protocol_id=link.protocol_id,
+            local_asn=link.peer_asn,
+            local_bgp_ls_id=link.peer_bgp_ls_id,
+            local_router_id=link.peer_router_id,
+            local_interface_address=link.peer_interface_address,
+            peer_interface_address=link.local_interface_address,
+            #local_te_router_ids=link.peer_te_router_ids,
+            #peer_te_router_ids=link.local_te_router_ids
+        ).first()
+        app.logger.debug("get_bgpls_link_remote_node (remote_link): {}".format(remote_link))
+        if remote_link:
+            return remote_link.node_id
+        else:
+            return None
+    return None
+
 def get_bgpls_links_all(node_id):
     links = BGPLSLink.query.filter_by(node_id=node_id)
     return links
@@ -144,14 +166,14 @@ def withdraw_update(update):
                 ))
                 link = BGPLSLink.query.filter_by(
                         node_id=node_id,
-                        #l3_routing_topology=withdraw["l3-routing-topology"],
-                        #protocol_id=withdraw["protocol-id"],
-                        #local_asn=withdraw["local-node-descriptors"]["autonomous-system"],
-                        #local_bgp_ls_id=withdraw["local-node-descriptors"]["bgp-ls-identifier"],
-                        #local_router_id=withdraw["local-node-descriptors"]["router-id"],
-                        #peer_asn=withdraw["remote-node-descriptors"]["autonomous-system"],
-                        #peer_bgp_ls_id=withdraw["remote-node-descriptors"]["bgp-ls-identifier"],
-                        #peer_router_id=withdraw["remote-node-descriptors"]["router-id"],
+                        l3_routing_topology=withdraw["l3-routing-topology"],
+                        protocol_id=withdraw["protocol-id"],
+                        local_asn=withdraw["local-node-descriptors"]["autonomous-system"],
+                        local_bgp_ls_id=withdraw["local-node-descriptors"]["bgp-ls-identifier"],
+                        local_router_id=withdraw["local-node-descriptors"]["router-id"],
+                        peer_asn=withdraw["remote-node-descriptors"]["autonomous-system"],
+                        peer_bgp_ls_id=withdraw["remote-node-descriptors"]["bgp-ls-identifier"],
+                        peer_router_id=withdraw["remote-node-descriptors"]["router-id"],
                         local_interface_address=withdraw["interface-address"]["interface-address"],
                         peer_interface_address=withdraw["neighbor-address"]["neighbor-address"]
                 ).first()
