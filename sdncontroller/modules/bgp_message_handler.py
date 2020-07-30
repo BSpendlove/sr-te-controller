@@ -43,7 +43,7 @@ def create_bgp_node(update):
         peer_bgpls_info["node-descriptors"]["router-id"]
     )
 
-    return {
+    node_data = {
         "node_id": node_id,
         "l3_nlri_type": peer_bgpls_info["ls-nlri-type"],
         "l3_routing_topology": peer_bgpls_info["l3-routing-topology"],
@@ -57,6 +57,19 @@ def create_bgp_node(update):
         "igp_area_id": peer_attribute_info["bgp-ls"]["area-id"],
         "local_te_router_ids": str(peer_attribute_info["bgp-ls"]["local-te-router-ids"])
     }
+
+    if "sr-capability-flags" in peer_attribute_info["bgp-ls"]:
+        ivrsv = "{}/{}/{}".format(
+                peer_attribute_info["bgp-ls"]["sr-capability-flags"]["I"],
+                peer_attribute_info["bgp-ls"]["sr-capability-flags"]["V"],
+                peer_attribute_info["bgp-ls"]["sr-capability-flags"]["RSV"],
+        )
+        node_data["sr_capability_flags"] = ivrsv
+
+    if "sids" in peer_attribute_info["bgp-ls"]:
+        node_data["sr_sids"] =  str(peer_attribute_info["bgp-ls"]["sids"])
+
+    return node_data
 
 def create_bgp_link(update):
     peer_ip = update["neighbor"]["address"]["peer"]

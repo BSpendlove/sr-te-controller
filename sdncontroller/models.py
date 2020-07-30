@@ -60,6 +60,8 @@ class BGPLSNode(db.Model):
     local_preference = db.Column(db.String)
     igp_area_id = db.Column(db.String)
     local_te_router_ids = db.Column(db.String) 
+    sr_capability_flags = db.Column(db.String)
+    sr_sids = db.Column(db.String)
     bgpls_links = db.relationship('BGPLSLink', backref='bgplsnode', lazy='dynamic')
     bgpls_prefixes = db.relationship('BGPLSPrefixV4', backref='bgplsnode', lazy='dynamic')
 
@@ -85,7 +87,9 @@ class BGPLSNode(db.Model):
                     "local-preference": self.local_preference,
                     "bgp-ls": {
                         "area-id": self.igp_area_id,
-                        "local-te-router-ids": self.local_te_router_ids
+                        "local-te-router-ids": self.local_te_router_ids,
+                        "sr-capability-flags": self.sr_capability_flags,
+                        "sids": self.sr_sids
                     }
                 },
             "links": (self.bgpls_links.all() if lazy else [link.as_dict() for link in self.bgpls_links.all()]),

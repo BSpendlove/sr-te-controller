@@ -88,6 +88,7 @@ def build_visual_ted(topology):
             link_data = {
                 "from": link["node_id"],
                 "to": remote_link,
+                "arrows": "to",
                 "label": link["link"]["interface-address"]["interface-address"],
                 "length": 300
             }

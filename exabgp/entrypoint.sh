@@ -12,4 +12,4 @@ if [ ! -f /etc/exabgp/exabgp.env ]; then
   sed -i "s/^user = 'nobody'/user = 'root'/" /etc/exabgp/exabgp.env 
 fi
 
-exabgp /etc/exabgp/exabgp.conf
+exabgp /etc/exabgp/exabgp.conf --debug
