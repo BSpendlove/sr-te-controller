@@ -263,13 +263,16 @@ class BGPLSPrefixV4(db.Model):
     origin = db.Column(db.String)
     local_preference = db.Column(db.Integer)
     prefix_metric = db.Column(db.Integer)
+    sr_prefix_flags = db.Column(db.String)
+    _sr_sids = db.Column(db.String)
     sr_prefix_attribute_flags = db.Column(db.String)
+    sr_algorithm = db.Column(db.String)
 
     def __repr__(self):
         return '<ExaBGP BGPLS PrefixV4 {}>'.format(self.id)
 
     def as_dict(self):
-        return {
+        result = {
             "id": self.id,
             "node_id": self.node_id,
             "prefix": {
@@ -289,8 +292,30 @@ class BGPLSPrefixV4(db.Model):
                     "local-preference": self.local_preference,
                     "bgp-ls": {
                         "prefix-metric": self.prefix_metric,
-                        "sr-prefix-attribute-flags": {x[:1]: int(x[-1:]) for x in [entry for entry in self.sr_prefix_attribute_flags.split(";") if entry]}
+                        "sr-algorithm": self.sr_algorithm
                     }
                 }
             }
         }
+
+        if self.sr_prefix_flags:
+            result["prefix"]["prefix_attributes"]["bgp-ls"]["sr-prefix-flags"] = {x[:1] : int(x[-1:]) for x in [entry for entry in self.sr_prefix_flags.split(";") if entry]}
+
+        if self._sr_sids:
+            app.logger.debug(self.sr_sids)
+            result["prefix"]["prefix_attributes"]["bgp-ls"]["sids"] = self.sr_sids
+
+        if self.sr_prefix_attribute_flags:
+            result["prefix"]["prefix_attributes"]["bgp-ls"]["sr-prefix-attribute-flags"] = {x[:1]: int(x[-1:]) for x in [entry for entry in self.sr_prefix_attribute_flags.split(";") if entry]}
+
+        return result
+
+    @property
+    def sr_sids(self):
+        return [int(x) for x in self._sr_sids.split(";")]
+
+    @sr_sids.setter
+    def sr_sids(self, value):
+        if isinstance(value, list):
+            convert_list = [str(x) for x in value]
+            self._sr_sids = ";".join(convert_list)

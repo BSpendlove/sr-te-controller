@@ -153,13 +153,27 @@ def create_bgp_prefix_v4(update):
             "prefix_metric": peer_attribute_info["bgp-ls"]["prefix-metric"]
         }
 
+        if "sr-prefix-flags" in peer_attribute_info["bgp-ls"]:
+            flag_string = ""
+            flags = peer_attribute_info["bgp-ls"]["sr-prefix-flags"]
+            for key,value in flags.items():
+                flag_string += "{}:{};".format(key, value)
+            
+            prefix_data["sr_prefix_flags"] = flag_string
+
+        if "sids" in peer_attribute_info["bgp-ls"]:
+            prefix_data["sr_sids"] = peer_attribute_info["bgp-ls"]["sids"]
+
         if "sr-prefix-attribute-flags" in peer_attribute_info["bgp-ls"]:
             flag_string = ""
             flags = peer_attribute_info["bgp-ls"]["sr-prefix-attribute-flags"]
             for key,value in flags.items():
                 flag_string += "{}:{};".format(key, value)
-            
+
             prefix_data["sr_prefix_attribute_flags"] = flag_string
+
+        if "sr-algorithm" in peer_attribute_info["bgp-ls"]:
+            prefix_data["sr_algorithm"] = peer_attribute_info["bgp-ls"]["sr-algorithm"]
 
         prefixes.append(prefix_data)
 

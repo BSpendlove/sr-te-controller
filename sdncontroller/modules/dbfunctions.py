@@ -58,6 +58,17 @@ def update_bgpls_node(update):
     app.logger.debug("Updated Node in database...\n{}".format(node))
     return node
 
+def get_bgpls_node_routerid_prefix(node_id):
+    node = BGPLSNode.query.get(node_id)
+    app.logger.debug("===========================NODE {}".format(node))
+    app.logger.debug(node.local_te_router_ids)
+    routerid_prefix = BGPLSPrefixV4.query.filter_by(
+        l3_routing_topology=node.l3_routing_topology,
+        ip_reachability_tlv=node.local_te_router_ids[0]
+    ).first()
+    app.logger.debug("RouterID Prefix: {}".format(routerid_prefix))
+    return routerid_prefix
+
 def add_bgpls_link(node, link):
     if not get_bgpls_node(node):
         node = add_bgpls_node({"node_id": node})

@@ -49,5 +49,11 @@ var data = {
   edges: edges
 };
 
-var options = {};
+var options = {
+  interaction: { hover: true },
+  manipulation: {
+    enabled: true,
+  },
+};
+
 var network = new vis.Network(container, data, options);

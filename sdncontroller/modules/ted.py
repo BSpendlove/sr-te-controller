@@ -80,7 +80,8 @@ def build_visual_ted(topology):
     for node in topology:
         node_data = {
             "id": node["id"],
-            "label": node["node_details"]["node_attributes"]["bgp-ls"]["local-te-router-ids"]
+            "label": node["node_details"]["node_attributes"]["bgp-ls"]["local-te-router-ids"],
+            "title": "SID Labels: {}".format(dbfunctions.get_bgpls_node_routerid_prefix(node["id"]).sr_sids)
         }
         vis_nodes.append(node_data)
         for link in node["node_details"]["links"]:
@@ -89,7 +90,8 @@ def build_visual_ted(topology):
                 "from": link["node_id"],
                 "to": remote_link,
                 "arrows": "to",
-                "label": link["link"]["interface-address"]["interface-address"],
+                "label": link["link"]["link_attributes"]["bgp-ls"]["sids"][0],
+                #"label": link["link"]["interface-address"]["interface-address"],
                 "length": 300
             }
             vis_edges.append(link_data)
