@@ -11,6 +11,7 @@ def message_parser(line):
     return temp_message
 
 api_details = env_file.get(path="/exabgp/env/api")
+api_url = api_details["flask_api"]
 
 counter = 0
 while True:
@@ -28,7 +29,6 @@ while True:
         # Parse message, and if it's the correct type, store in the database
         message = message_parser(line)
         if message:
-            api_url = api_details["flask_api"]
             if message["type"] == "state":
                 requests.post("{}/exabgp/state".format(api_url), json=message)
             if message["type"] == "update":

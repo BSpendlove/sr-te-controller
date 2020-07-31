@@ -54,9 +54,11 @@ def create_bgp_node(update):
         "nexthop": peer_bgpls_info["nexthop"],
         "origin": peer_attribute_info["origin"],
         "local_preference": peer_attribute_info["local-preference"],
-        "igp_area_id": peer_attribute_info["bgp-ls"]["area-id"],
-        "local_te_router_ids": str(peer_attribute_info["bgp-ls"]["local-te-router-ids"])
+        "igp_area_id": peer_attribute_info["bgp-ls"]["area-id"]
     }
+
+    if "local-te-router-ids" in peer_attribute_info["bgp-ls"]:
+        node_data["local_te_router_ids"] = str(peer_attribute_info["bgp-ls"]["local-te-router-ids"])
 
     if "sr-capability-flags" in peer_attribute_info["bgp-ls"]:
         ivrsv = "{}/{}/{}".format(

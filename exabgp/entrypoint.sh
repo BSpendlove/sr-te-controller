@@ -9,7 +9,7 @@ if [ ! -f /etc/exabgp/exabgp.env ]; then
   # bind to all interfaces
   sed -i "s/^bind = .*/bind = '0.0.0.0'/" /etc/exabgp/exabgp.env 
   # run as root (otherwise ip add commands wont work)
-  sed -i "s/^user = 'nobody'/user = 'root'/" /etc/exabgp/exabgp.env 
+  sed -i "s/^user = 'nobody'/user = 'root'/" /etc/exabgp/exabgp.env
 fi
 
-exabgp /etc/exabgp/exabgp.conf --debug
+exabgp /etc/exabgp/exabgp.conf
