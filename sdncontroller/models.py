@@ -59,9 +59,9 @@ class BGPLSNode(db.Model):
     origin = db.Column(db.String)
     local_preference = db.Column(db.String)
     igp_area_id = db.Column(db.String)
-    local_te_router_ids = db.Column(db.String) 
+    _local_te_router_ids = db.Column(db.String) 
     sr_capability_flags = db.Column(db.String)
-    sr_sids = db.Column(db.String)
+    _sr_sids = db.Column(db.String)
     bgpls_links = db.relationship('BGPLSLink', backref='bgplsnode', lazy='dynamic')
     bgpls_prefixes = db.relationship('BGPLSPrefixV4', backref='bgplsnode', lazy='dynamic')
 
@@ -88,7 +88,7 @@ class BGPLSNode(db.Model):
                     "bgp-ls": {
                         "area-id": self.igp_area_id,
                         "local-te-router-ids": self.local_te_router_ids,
-                        "sr-capability-flags": self.sr_capability_flags,
+                        "sr-capability-flags": {x[:1]: int(x[-1:]) for x in [entry for entry in self.sr_capability_flags.split(";") if entry]},
                         "sids": self.sr_sids
                     }
                 },
@@ -96,6 +96,26 @@ class BGPLSNode(db.Model):
             "prefixes": (self.bgpls_prefixes.all() if lazy else [prefix.as_dict() for prefix in self.bgpls_prefixes.all()])
             }
         }
+
+    @property
+    def local_te_router_ids(self):
+        return [x for x in self._local_te_router_ids.split(";")]
+
+    @local_te_router_ids.setter
+    def local_te_router_ids(self, value):
+        if isinstance(value, list):
+            convert_list = [str(x) for x in value]
+            self._local_te_router_ids = ";".join(convert_list)
+
+    @property
+    def sr_sids(self):
+        return [int(x) for x in self._sr_sids.split(";")]
+
+    @sr_sids.setter
+    def sr_sids(self, value):
+        if isinstance(value, list):
+            convert_list = [str(x) for x in value]
+            self._sr_sids = ";".join(convert_list)
 
 class BGPLSLink(db.Model):
     __tablename__ = "bgplslink"
@@ -115,14 +135,17 @@ class BGPLSLink(db.Model):
     peer_interface_address = db.Column(db.String)
     origin = db.Column(db.String)
     local_preference = db.Column(db.String)
-    local_te_router_ids = db.Column(db.String)
-    peer_te_router_ids = db.Column(db.String)
-    admin_group_mask = db.Column(db.String)
+    _local_te_router_ids = db.Column(db.String)
+    _peer_te_router_ids = db.Column(db.String)
+    _admin_group_mask = db.Column(db.String)
     maximum_link_bandwidth = db.Column(db.Float)
     maximum_reservable_bandwidth = db.Column(db.Float)
-    unreserved_bandwidth = db.Column(db.String)
+    _unreserved_bandwidth = db.Column(db.String)
     te_metric = db.Column(db.Integer)
     igp_metric = db.Column(db.Integer)
+    sr_adj_flags = db.Column(db.String)
+    _sr_sids = db.Column(db.String)
+    sr_adj_weight = db.Column(db.Integer)
 
     def __repr__(self):
         return '<ExaBGP BGPLS Link {}>'.format(self.id)
@@ -156,16 +179,72 @@ class BGPLSLink(db.Model):
                     "local-preference": self.local_preference,
                     "bgp-ls": {
                         "local-te-router-ids": self.local_te_router_ids,
+                        "peer-te-router-ids": self.peer_te_router_ids,
                         "admin-group-mask": self.admin_group_mask,
                         "maximum-link-bandwidth": self.maximum_link_bandwidth,
                         "maximum-reservable-link-bandwidth": self.maximum_reservable_bandwidth,
                         "unreserved-bandwidth": self.unreserved_bandwidth,
                         "te-metric": self.te_metric,
-                        "igp-metric": self.igp_metric
+                        "igp-metric": self.igp_metric,
+                        "sr_adj_flags": {x[:1]: int(x[-1:]) for x in [entry for entry in self.sr_adj_flags.split(";") if entry]},
+                        "sids": self.sr_sids,
+                        "sr-adj-weight": self.sr_adj_weight
                     }
                 }
             }
         }
+
+    @property
+    def local_te_router_ids(self):
+        if self._local_te_router_ids:
+            return [x for x in self._local_te_router_ids.split(";")]
+
+    @local_te_router_ids.setter
+    def local_te_router_ids(self, value):
+        if isinstance(value, list):
+            convert_list = [str(x) for x in value]
+            self._local_te_router_ids = ";".join(convert_list)
+
+    @property
+    def peer_te_router_ids(self):
+        if self._peer_te_router_ids:
+            return [x for x in self._peer_te_router_ids.split(";")]
+
+    @peer_te_router_ids.setter
+    def peer_te_router_ids(self, value):
+        if isinstance(value, list):
+            convert_list = [str(x) for x in value]
+            self._peer_te_router_ids = ";".join(convert_list)
+
+    @property
+    def admin_group_mask(self):
+        return [int(x) for x in self._admin_group_mask.split(";")]
+
+    @admin_group_mask.setter
+    def admin_group_mask(self, value):
+        if isinstance(value, list):
+            convert_list = [str(x) for x in value]
+            self._admin_group_mask = ";".join(convert_list)
+
+    @property
+    def unreserved_bandwidth(self):
+        return [float(x) for x in self._unreserved_bandwidth.split(";")]
+
+    @unreserved_bandwidth.setter
+    def unreserved_bandwidth(self, value):
+        if isinstance(value, list):
+            convert_list = [str(x) for x in value]
+            self._unreserved_bandwidth = ";".join(convert_list)
+
+    @property
+    def sr_sids(self):
+        return [int(x) for x in self._sr_sids.split(";")]
+
+    @sr_sids.setter
+    def sr_sids(self, value):
+        if isinstance(value, list):
+            convert_list = [str(x) for x in value]
+            self._sr_sids = ";".join(convert_list)
 
 class BGPLSPrefixV4(db.Model):
     __tablename__ = "bgplsprefixv4"
@@ -184,6 +263,7 @@ class BGPLSPrefixV4(db.Model):
     origin = db.Column(db.String)
     local_preference = db.Column(db.Integer)
     prefix_metric = db.Column(db.Integer)
+    sr_prefix_attribute_flags = db.Column(db.String)
 
     def __repr__(self):
         return '<ExaBGP BGPLS PrefixV4 {}>'.format(self.id)
@@ -208,7 +288,8 @@ class BGPLSPrefixV4(db.Model):
                     "origin": self.origin,
                     "local-preference": self.local_preference,
                     "bgp-ls": {
-                        "prefix-metric": self.prefix_metric
+                        "prefix-metric": self.prefix_metric,
+                        "sr-prefix-attribute-flags": {x[:1]: int(x[-1:]) for x in [entry for entry in self.sr_prefix_attribute_flags.split(";") if entry]}
                     }
                 }
             }

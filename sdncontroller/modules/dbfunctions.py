@@ -130,19 +130,43 @@ def update_bgpls_link(update):
     app.logger.debug("Updated Link in database...\n{}".format(node))
     return link
 
-def add_bgpls_prefix(node, prefix):
-    note.bgpls_prefixes.append(prefix)
-    db.session.commit()
-    return prefix
+def add_bgpls_prefix_v4(node, prefix):
+    if not get_bgpls_node(node):
+        node = add_bgpls_node({"node_id": node})
+    else:
+        node = get_bgpls_node(node)
 
-def delete_bgpls_prefix(id):
+    # Check if current prefix exists..
+    app.logger.debug("-------------------- add_bgpls_prefix_v4 node.id is {}".format(node.id))
+    app.logger.debug("Trying to see if prefix {} exist already...".format(prefix))
+    check_prefix = BGPLSPrefixV4.query.filter_by(
+        node_id=node.id,
+        ip_reachability_tlv=prefix["ip_reachability_tlv"],
+        ip_reachability_prefix=prefix["ip_reachability_prefix"]
+    ).first()
+
+    app.logger.debug("check_prefix value is {}".format(check_prefix))
+    if check_prefix:
+        app.logger.debug("Prefix already exist {}".format(str(check_prefix)))
+        prefix["node_id"] = node.id
+        for key,value in prefix.items():
+            setattr(check_prefix, key, value)
+            db.session.commit()
+            app.logger.debug("Updated existing prefix {}".format(str(check_prefix)))
+    new_prefix = BGPLSPrefixV4(**prefix)
+    app.logger.debug("Attempting to add Prefix {} to node {}".format(vars(new_prefix), node))
+    node.bgpls_prefixes.append(new_prefix)
+    db.session.commit()
+    return new_prefix
+
+def delete_bgpls_prefix_v4(id):
     return BGPLSPrefixV4.query.filter_by(id).delete()
 
-def get_bgpls_prefix(id):
+def get_bgpls_prefix_v4(id):
     prefix = BGPLSPrefixV4.query.get(id)
     return prefix
 
-def get_bgpls_prefixes_all(node_id):
+def get_bgpls_prefixes_v4_all(node_id):
     prefixes = BGPLSPrefixV4.query.filter_by(node_id=node_id)
     return prefixes
 

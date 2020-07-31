@@ -7,7 +7,7 @@ from modules.bgp_message_handler import (
     create_bgp_link,
     create_bgp_prefix_v4,
     create_bgp_prefix_v6,
-    find_node_id_from_link_update
+    find_node_id_from_update
 )
 import json
 import logging
@@ -68,37 +68,17 @@ def exabgp_update():
         if "bgpls-link" in str(data):
             bgp_link = create_bgp_link(data)
             app.logger.debug("BGP Link created for database...\n{}".format(json.dumps(bgp_link, indent=4)))
-            node_id = find_node_id_from_link_update(data)
+            node_id = find_node_id_from_update(data)
             app.logger.debug("node_id is: {}".format(node_id))
-            link = dbfunctions.add_bgpls_link(node_id, bgp_link)
+            link = dbfunctions.add_bgpls_link(bgp_link["node_id"], bgp_link)
             app.logger.debug("Added BGP Link into database...\n{}".format(json.dumps(link.as_dict(), indent=4)))
-        """
-        if INITIAL_TOPOLOGY:
-            TOPOLOGY.append(data)
-            #app.logger.debug("Appending 'initial_topology' message to TOPOLOGY.\n{}".format(json.dumps(data, indent=4)))
-            if "eor" in data["neighbor"]["message"]:
-                ted_id = generate_ted_id(data)
-                app.logger.debug("Generate ted_id ({}) from update...".format(ted_id))
-                INITIAL_TOPOLOGY = False
-                new_topology = None
-                try:
-                    new_topology = build_ted(TOPOLOGY)
-                except Exception as error:
-                    app.logger.debug("Exception building TED/topology: {}".format(error))
-                app.logger.debug("EOR detected ({}).\nINITIAL_TOPOLOGY={}\nHere is what the topology looks like: {}".format(data["host"], INITIAL_TOPOLOGY, json.dumps(new_topology, indent=4)))
-                if new_topology:
-                    try:
-                        pass
-                        #topology_id = db_add_ted(id=ted_id, ted=new_topology)
-                    except Exception as error:
-                        app.logger.debug("Error adding TED ({}) topology in database... Error: {}".format(ted_id, error))
-                    if topology_id:
-                        app.logger.debug("Successfully generated TED/Topology... Datbase entry = {}".format(topology_id))
-                return {"ted_topology": new_topology }
-        else:
-            app.logger.debug("UPDATE message json dump:\n{}".format(data))
-            ted_id = generate_ted_id(data)
-            app.logger.debug("Generate ted_id ({}) from update...".format(ted_id))
-            """
+        if "bgpls-prefix-v4" in str(data):
+            bgp_prefix = create_bgp_prefix_v4(data)
+            app.logger.debug("BGP Prefix(es) created for database...\n{}".format(json.dumps(bgp_prefix, indent=4)))
+            for prefix in bgp_prefix:
+                app.logger.debug("--------------- for prefix in bgp_prefix:\nPrefix: {}".format(json.dumps(prefix, indent=4)))
+                output = dbfunctions.add_bgpls_prefix_v4(prefix["node_id"], prefix)
+                app.logger.debug("Added BGP Prefix into database...\n{}".format(json.dumps(output.as_dict(), indent=4)))
+
     return data
 
