@@ -1,4 +1,4 @@
-### ISIS SDN Controller
+### SR-TE Controller
 
 This is a fairly slow attempt in making some kind of python API that allows you to interact with the IGP (IS-IS/OSPF) network. The initial idea of this project is for the learning experience both for in-depth networking and developing my python skills.
 
