@@ -60,13 +60,11 @@ def update_bgpls_node(update):
 
 def get_bgpls_node_routerid_prefix(node_id):
     node = BGPLSNode.query.get(node_id)
-    app.logger.debug("===========================NODE {}".format(node))
     app.logger.debug(node.local_te_router_ids)
     routerid_prefix = BGPLSPrefixV4.query.filter_by(
         l3_routing_topology=node.l3_routing_topology,
         ip_reachability_tlv=node.local_te_router_ids[0]
     ).first()
-    app.logger.debug("RouterID Prefix: {}".format(routerid_prefix))
     return routerid_prefix
 
 def add_bgpls_link(node, link):
@@ -148,7 +146,6 @@ def add_bgpls_prefix_v4(node, prefix):
         node = get_bgpls_node(node)
 
     # Check if current prefix exists..
-    app.logger.debug("-------------------- add_bgpls_prefix_v4 node.id is {}".format(node.id))
     app.logger.debug("Trying to see if prefix {} exist already...".format(prefix))
     check_prefix = BGPLSPrefixV4.query.filter_by(
         node_id=node.id,
@@ -170,6 +167,15 @@ def add_bgpls_prefix_v4(node, prefix):
     db.session.commit()
     return new_prefix
 
+def add_bgpls_prefix_v6(node, prefix):
+    # Not fully implemented yet...
+    if not get_bgpls_node(node):
+        node = add_bgpls_node({"node_id": node})
+    else:
+        node = get_bgpls_node(node)
+
+    return None
+
 def delete_bgpls_prefix_v4(id):
     return BGPLSPrefixV4.query.filter_by(id).delete()
 
@@ -181,7 +187,20 @@ def get_bgpls_prefixes_v4_all(node_id):
     prefixes = BGPLSPrefixV4.query.filter_by(node_id=node_id)
     return prefixes
 
+def withdraw_bgpls_node():
+    return None
+
+def withdraw_bgpls_link():
+    return None
+
+def withdraw_bgpls_prefix_v4():
+    return None
+
+def withdraw_bgpls_prefix_v6():
+    return None
+
 def withdraw_update(update):
+    # Separate this function into per bgpls NLRI type (eg. bgpls-node, bgpls-link, bgpls-prefix-v4 and bgpls-prefix-v6
     if "withdraw" in str(update):
         for withdraw in update["neighbor"]["message"]["update"]["withdraw"]["bgp-ls bgp-ls"]:
             if withdraw["ls-nlri-type"] == "bgpls-link":
