@@ -30,8 +30,22 @@ while True:
         message = message_parser(line)
         if message:
             if message["type"] == "state":
+                if message["neighbor"]["state"] == "up":
+                    # /exabgp/neighbor/state/up
+                    pass
+                if message["neighbor"]["state"] == "down":
+                    # /exabgp/neighbor/state/down
+                    pass
+                if message["neighbor"]["state"] == "connected":
+                    # /exabgp/neighbor/state/connected
+                    pass
                 requests.post("{}/exabgp/state".format(api_url), json=message)
             if message["type"] == "update":
+                # Determine the message type... eg bgpls-node, bgpls-link, bgpls-prefix-v4 or bgpls-prefix-v6
+                # /exabgp/update/bgpls/node
+                # /exabgp/update/bgpls/link
+                # /exabgp/update/bgpls/prefixv4
+                # /exabgp/update/bgpls/prefixv6
                 requests.post("{}/exabgp/update".format(api_url), json=message)
 
     except KeyboardInterrupt:
