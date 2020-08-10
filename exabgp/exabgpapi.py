@@ -67,8 +67,8 @@ while True:
                     if "bgpls-prefix-v6" in message_string:
                         # /exabgp/update/bgpls/withdraw/prefixv6
                         url = "{}/exabgp/update/bgpls/withdraw/prefixv6".format(api_url)
-                if url:
-                    requests.post(url, json=message)
+            if url:
+                requests.post(url, json=message)
 
     except KeyboardInterrupt:
         pass
