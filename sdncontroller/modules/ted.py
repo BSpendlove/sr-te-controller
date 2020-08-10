@@ -92,7 +92,8 @@ def build_visual_ted(topology):
                 "arrows": "to",
                 "label": link["link"]["link_attributes"]["bgp-ls"]["sids"][0],
                 #"label": link["link"]["interface-address"]["interface-address"],
-                "length": 300
+                "length": 300,
+                "shape": "circularImage"
             }
             vis_edges.append(link_data)
 

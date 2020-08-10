@@ -2,9 +2,12 @@ from config import Config
 from flask import Flask, request, render_template
 from flask_migrate import Migrate
 import json
+import logging
 
 app = Flask(__name__)
 app.config.from_object(Config)
+
+app.logger.setLevel(logging.DEBUG)
 
 from models import db
 migrate = Migrate(app, db)

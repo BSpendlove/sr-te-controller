@@ -13,7 +13,7 @@ def add_bgp_state(update):
     return neighborship
 
 def get_bgp_state(id):
-    neighborship = BGPNeighborship.query.filter_by(id).first()
+    neighborship = BGPNeighborship.query.filter_by(id=id).first()
     return neighborship
 
 def get_bgp_states_all():
@@ -35,7 +35,7 @@ def add_bgpls_node(update):
     return node
 
 def delete_bgpls_node(id):
-    return BGPLSNode.query.filter_by(id).delete()
+    return BGPLSNode.query.filter_by(id=id).delete()
 
 def get_bgpls_node(node_id):
     node = BGPLSNode.query.filter_by(node_id=node_id).first()
@@ -75,14 +75,16 @@ def add_bgpls_link(node, link):
     
     # Check if current link exists..
 
-    app.logger.debug("Trying to see if Link {} exist already...".format(link))
+    #app.logger.debug("Trying to see if Link {} exist already...".format(link))
     check_link = BGPLSLink.query.filter_by(
         node_id=node.id,
+        l3_routing_topology=link["l3_routing_topology"],
+        local_router_id=link["local_router_id"],
         local_interface_address=link["local_interface_address"],
         peer_interface_address=link["peer_interface_address"]
     ).first()
 
-    app.logger.debug("check_link value is {}".format(check_link))
+    #app.logger.debug("check_link value is {}".format(check_link))
     if check_link:
         app.logger.debug("Link already exist {}".format(str(check_link)))
         # Temp solution atm...
@@ -98,8 +100,31 @@ def add_bgpls_link(node, link):
     db.session.commit()
     return new_link
 
+def check_bgpls_link(node, link):
+    if not get_bgpls_node(node):
+        node = add_bgpls_node({"node_id": node})
+    else:
+        node = get_bgpls_node(node)
+
+    check_link = BGPLSLink.query.filter_by(
+        node_id=node.id,
+        l3_routing_topology=link["l3_routing_topology"],
+        local_router_id=link["local_router_id"],
+        local_interface_address=link["local_interface_address"],
+        peer_interface_address=link["peer_interface_address"]
+    ).first()
+
+    if not check_link:
+        return None
+
+    return check_link
+
+
 def delete_bgpls_link(id):
-    return BGPLSLink.query.filter_by(id=id).delete()
+    link = BGPLSLink.query.filter_by(id=id).delete()
+    app.logger.debug("Deleted Link {} from database".format(link))
+    db.session.commit()
+    return link
 
 def get_bgpls_link(id):
     link = BGPLSLink.query.get(id)
@@ -107,7 +132,7 @@ def get_bgpls_link(id):
 
 def get_bgpls_link_remote_node(id):
     link = BGPLSLink.query.get(id)
-    app.logger.debug("get_bgpls_link_remote_node (link): {}".format(link))
+    #app.logger.debug("get_bgpls_link_remote_node (link): {}".format(link))
     if link:
         remote_link = BGPLSLink.query.filter_by(
             l3_routing_topology=link.l3_routing_topology,
@@ -120,7 +145,7 @@ def get_bgpls_link_remote_node(id):
             #local_te_router_ids=link.peer_te_router_ids,
             #peer_te_router_ids=link.local_te_router_ids
         ).first()
-        app.logger.debug("get_bgpls_link_remote_node (remote_link): {}".format(remote_link))
+        #app.logger.debug("get_bgpls_link_remote_node (remote_link): {}".format(remote_link))
         if remote_link:
             return remote_link.node_id
         else:
@@ -146,26 +171,47 @@ def add_bgpls_prefix_v4(node, prefix):
         node = get_bgpls_node(node)
 
     # Check if current prefix exists..
-    app.logger.debug("Trying to see if prefix {} exist already...".format(prefix))
+    #app.logger.debug("Trying to see if prefix {} exist already...".format(prefix))
     check_prefix = BGPLSPrefixV4.query.filter_by(
         node_id=node.id,
+        l3_routing_topology=prefix["l3_routing_topology"],
+        local_router_id=prefix["local_router_id"],
         ip_reachability_tlv=prefix["ip_reachability_tlv"],
         ip_reachability_prefix=prefix["ip_reachability_prefix"]
     ).first()
 
-    app.logger.debug("check_prefix value is {}".format(check_prefix))
+    #app.logger.debug("check_prefix value is {}".format(check_prefix))
     if check_prefix:
-        app.logger.debug("Prefix already exist {}".format(str(check_prefix)))
+        #app.logger.debug("Prefix already exist {}".format(str(check_prefix)))
         prefix["node_id"] = node.id
         for key,value in prefix.items():
             setattr(check_prefix, key, value)
             db.session.commit()
-            app.logger.debug("Updated existing prefix {}".format(str(check_prefix)))
+            #app.logger.debug("Updated existing prefix {}".format(str(check_prefix)))
     new_prefix = BGPLSPrefixV4(**prefix)
-    app.logger.debug("Attempting to add Prefix {} to node {}".format(vars(new_prefix), node))
+    #app.logger.debug("Attempting to add Prefix {} to node {}".format(vars(new_prefix), node))
     node.bgpls_prefixes.append(new_prefix)
     db.session.commit()
     return new_prefix
+
+def check_bgpls_prefix_v4(node, prefix):
+    if not get_bgpls_node(node):
+        node = add_bgpls_node({"node_id": node})
+    else:
+        node = get_bgpls_node(node)
+
+    check_prefix = BGPLSPrefixV4.query.filter_by(
+        node_id=node.id,
+        l3_routing_topology=prefix["l3_routing_topology"],
+        local_router_id=prefix["local_router_id"],
+        ip_reachability_tlv=prefix["ip_reachability_tlv"],
+        ip_reachability_prefix=prefix["ip_reachability_prefix"]
+    ).first()
+
+    if not check_prefix:
+        return None
+
+    return check_prefix
 
 def add_bgpls_prefix_v6(node, prefix):
     # Not fully implemented yet...
@@ -177,7 +223,10 @@ def add_bgpls_prefix_v6(node, prefix):
     return None
 
 def delete_bgpls_prefix_v4(id):
-    return BGPLSPrefixV4.query.filter_by(id).delete()
+    prefix = BGPLSPrefixV4.query.filter_by(id=id).delete()
+    app.logger.debug("Deleted PrefixV4 from database".format(prefix))
+    db.session.commit()
+    return prefix
 
 def get_bgpls_prefix_v4(id):
     prefix = BGPLSPrefixV4.query.get(id)
@@ -186,76 +235,3 @@ def get_bgpls_prefix_v4(id):
 def get_bgpls_prefixes_v4_all(node_id):
     prefixes = BGPLSPrefixV4.query.filter_by(node_id=node_id)
     return prefixes
-
-def withdraw_bgpls_node():
-    return None
-
-def withdraw_bgpls_link():
-    return None
-
-def withdraw_bgpls_prefix_v4():
-    return None
-
-def withdraw_bgpls_prefix_v6():
-    return None
-
-def withdraw_update(update):
-    # Separate this function into per bgpls NLRI type (eg. bgpls-node, bgpls-link, bgpls-prefix-v4 and bgpls-prefix-v6
-    if "withdraw" in str(update):
-        for withdraw in update["neighbor"]["message"]["update"]["withdraw"]["bgp-ls bgp-ls"]:
-            if withdraw["ls-nlri-type"] == "bgpls-link":
-                app.logger.debug("withdraw_update found bgpls-link")
-                node_id = "{}{}{}".format(
-                    withdraw["local-node-descriptors"]["autonomous-system"],
-                    withdraw["local-node-descriptors"]["bgp-ls-identifier"],
-                    withdraw["local-node-descriptors"]["router-id"]
-                
-                
-                )
-                node_id = get_bgpls_node(node_id).id
-                app.logger.debug("Filtering based on these columns:\n{}\n{}\n{}".format(
-                    node_id,
-                    withdraw["interface-address"]["interface-address"],
-                    withdraw["neighbor-address"]["neighbor-address"]
-                ))
-                link = BGPLSLink.query.filter_by(
-                        node_id=node_id,
-                        l3_routing_topology=withdraw["l3-routing-topology"],
-                        protocol_id=withdraw["protocol-id"],
-                        local_asn=withdraw["local-node-descriptors"]["autonomous-system"],
-                        local_bgp_ls_id=withdraw["local-node-descriptors"]["bgp-ls-identifier"],
-                        local_router_id=withdraw["local-node-descriptors"]["router-id"],
-                        peer_asn=withdraw["remote-node-descriptors"]["autonomous-system"],
-                        peer_bgp_ls_id=withdraw["remote-node-descriptors"]["bgp-ls-identifier"],
-                        peer_router_id=withdraw["remote-node-descriptors"]["router-id"],
-                        local_interface_address=withdraw["interface-address"]["interface-address"],
-                        peer_interface_address=withdraw["neighbor-address"]["neighbor-address"]
-                ).first()
-                app.logger.debug("Query withdraw link results: {}".format(link))
-                if link:
-                    db.session.delete(link)
-                    db.session.commit()
-                    app.logger.debug("Removed BGPLSLink {}".format(link))
-                return "Successfully deleted link {}".format(str(link))
-            if withdraw["ls-nlri-type"] == "bgpls-prefix-v4":
-                app.logger.debug("withdraw_update found bgpls-prefix-v4")
-                node_id = "{}{}{}".format(
-                    withdraw["node-descriptors"]["autonomous-system"],
-                    withdraw["node-descriptors"]["bgp-ls-identifier"],
-                    withdraw["node-descriptors"]["router-id"]
-                )
-                prefix = BGPLSPrefixV4.query.filter_by(
-                    node_id=node_id,
-                    l3_routing_topology=withdraw["l3-routing-topology"],
-                        protocol_id=withdraw["protocol-id"],
-                        local_asn=withdraw["node-descriptors"]["autonomous-system"],
-                        local_bgp_ls_id=withdraw["node-descriptors"]["bgp-ls-identifier"],
-                        local_router_id=withdraw["node-descriptors"]["router-id"],
-                        ip_reachability_tlv=withdraw["ip-reachability-tlv"],
-                        ip_reachability_prefix=withdraw["ip-reach-prefix"]
-                ).first()
-                if prefix:
-                    db.session.delete(prefix)
-                    db.session.commit()
-                    app.logger.debug("Removed BGPLSPrefixV4 {}".format(prefix))
-                return "Successfully deleted prefix {}".format(str(prefix))
