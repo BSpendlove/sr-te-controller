@@ -19,7 +19,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = u'sr-te-controller'
+project = u'SR-TE Controller'
 copyright = u'2020, Brandon Spendlove'
 author = u'Brandon Spendlove'
 
@@ -39,7 +39,6 @@ release = u'0.0.1'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx.ext.doctest',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -64,7 +63,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = [u'_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = None
@@ -75,8 +74,7 @@ pygments_style = None
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-#html_theme = 'alabaster'
-html_theme = 'default'
+html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -103,7 +101,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'sr-te-controllerdoc'
+htmlhelp_basename = 'SR-TEControllerdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -130,7 +128,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'sr-te-controller.tex', u'sr-te-controller Documentation',
+    (master_doc, 'SR-TEController.tex', u'SR-TE Controller Documentation',
      u'Brandon Spendlove', 'manual'),
 ]
 
@@ -140,7 +138,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'sr-te-controller', u'sr-te-controller Documentation',
+    (master_doc, 'sr-tecontroller', u'SR-TE Controller Documentation',
      [author], 1)
 ]
 
@@ -151,8 +149,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'sr-te-controller', u'sr-te-controller Documentation',
-     author, 'sr-te-controller', 'One line description of project.',
+    (master_doc, 'SR-TEController', u'SR-TE Controller Documentation',
+     author, 'SR-TEController', 'One line description of project.',
      'Miscellaneous'),
 ]
 
@@ -173,6 +171,3 @@ epub_title = project
 
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
-
-
-# -- Extension configuration -------------------------------------------------
