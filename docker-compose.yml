@@ -19,7 +19,4 @@ services:
     container_name: sdncontroller
     restart: always
     volumes:
-      - sdn_db:/app/db
-
-volumes:
-  sdn_db:
+      - ./sdncontroller/data:/app/db

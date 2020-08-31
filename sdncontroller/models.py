@@ -99,7 +99,8 @@ class BGPLSNode(db.Model):
 
     @property
     def local_te_router_ids(self):
-        return [x for x in self._local_te_router_ids.split(";")]
+        if self._local_te_router_ids:
+            return [x for x in self._local_te_router_ids.split(";")]
 
     @local_te_router_ids.setter
     def local_te_router_ids(self, value):
@@ -109,7 +110,8 @@ class BGPLSNode(db.Model):
 
     @property
     def sr_sids(self):
-        return [int(x) for x in self._sr_sids.split(";")]
+        if self._sr_sids:
+            return [int(x) for x in self._sr_sids.split(";")]
 
     @sr_sids.setter
     def sr_sids(self, value):
@@ -218,7 +220,8 @@ class BGPLSLink(db.Model):
 
     @property
     def admin_group_mask(self):
-        return [int(x) for x in self._admin_group_mask.split(";")]
+        if self._admin_group_mask:
+            return [int(x) for x in self._admin_group_mask.split(";")]
 
     @admin_group_mask.setter
     def admin_group_mask(self, value):
@@ -228,7 +231,8 @@ class BGPLSLink(db.Model):
 
     @property
     def unreserved_bandwidth(self):
-        return [float(x) for x in self._unreserved_bandwidth.split(";")]
+        if self._unreserved_bandwidth:
+            return [float(x) for x in self._unreserved_bandwidth.split(";")]
 
     @unreserved_bandwidth.setter
     def unreserved_bandwidth(self, value):
@@ -238,7 +242,8 @@ class BGPLSLink(db.Model):
 
     @property
     def sr_sids(self):
-        return [int(x) for x in self._sr_sids.split(";")]
+        if self._sr_sids:
+            return [int(x) for x in self._sr_sids.split(";")]
 
     @sr_sids.setter
     def sr_sids(self, value):
@@ -312,7 +317,8 @@ class BGPLSPrefixV4(db.Model):
 
     @property
     def sr_sids(self):
-        return [int(x) for x in self._sr_sids.split(";")]
+        if self._sr_sids:
+            return [int(x) for x in self._sr_sids.split(";")]
 
     @sr_sids.setter
     def sr_sids(self, value):

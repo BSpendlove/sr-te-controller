@@ -3,6 +3,10 @@ import json
 from example_outputs.topo3 import topo3
 from graphviz import Digraph
 
+"""
+This file is for testing purposes (offline database) / No current BGPLS peering with ExaBGP
+"""
+
 node_data = []
 
 for node in topo3:
