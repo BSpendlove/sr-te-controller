@@ -13,11 +13,11 @@ def neighbor_down():
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
     data = request.get_json()
-    #Sanity check to confirm message type is 'state' (eg neighbor state up/down/connect)
     if data["type"] == "state":
         if data["neighbor"]["state"] == "down":
             app.logger.debug("Neighbor DOWN detected ({})...".format(data["host"]))
 
+    # Implement logic to clear the database (BGPLSNode and the relevant BGPLSLinks+PrefixesV4/V6 learned by the specific neighbor
     return data
 
 @bp.route("/up", methods=["POST"])
@@ -26,7 +26,6 @@ def neighbor_up():
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
     data = request.get_json()
-    #Sanity check to confirm message type is 'state' (eg neighbor state up/down/connect)
     if data["type"] == "state":
         if data["neighbor"]["state"] == "up":
             app.logger.debug("Neighbor UP detected ({})...".format(data["host"]))
@@ -47,7 +46,6 @@ def neighbor_connected():
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
     data = request.get_json()
-    #Sanity check to confirm message type is 'state' (eg neighbor state up/down/connect)
     if data["type"] == "state":
         if data["neighbor"]["state"] == "connected":
             app.logger.debug("Neighbor CONNECTED detected ({})...".format(data["host"]))

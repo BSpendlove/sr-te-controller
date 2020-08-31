@@ -17,7 +17,6 @@ def withdraw_bgpls_message():
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
     data = request.get_json()
-    #Sanity check to confirm message type is 'update' (eg. withdraw/announce update)
     if data["type"] == "update":
         app.logger.debug("Received Withdraw message... Raw data is:\n{}".format(json.dumps(data, indent=4)))
         try:

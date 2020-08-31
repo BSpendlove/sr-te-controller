@@ -1,4 +1,5 @@
 def find_node_id_from_update(update):
+    """Returns node_id based on a raw exabgp update"""
     common_updates = ["bgpls-node", "bgpls-prefix-v4", "bgpls-prefix-v6"]
     if any(x in str(update) for x in common_updates):
         #bgpls-node, bgpls-prefix-v4 and bpls-prefix-v6 all have the same TLV/Attributes
@@ -23,6 +24,7 @@ def find_node_id_from_update(update):
         return node_id
 
 def find_node_id_from_link(link):
+    """Returns node_id based on BGP-LS Link NLRI"""
     if link["ls-nlri-type"] == "bgpls-link":
         node_id = "{}:{}".format(
             link["l3-routing-topology"],
@@ -32,6 +34,7 @@ def find_node_id_from_link(link):
         return node_id
 
 def find_node_id_from_prefix(prefix):
+    """Returns node_id based on BGP-LS Prefix NLRI"""
     if prefix["ls-nlri-type"] == "bgpls-prefix-v4":
         node_id = "{}:{}".format(
             prefix["l3-routing-topology"],
@@ -41,6 +44,7 @@ def find_node_id_from_prefix(prefix):
         return node_id
 
 def create_bgp_state(update):
+    """Prepares a dict from a raw BGP State Message to be used in the database"""
     return {
         "exabgp_version": update["exabgp"],
         "time": update["time"],
@@ -56,6 +60,7 @@ def create_bgp_state(update):
     }
 
 def create_bgpls_node(update):
+    """Prepares a dict from a raw BGPLSNode NLRI Update to be used in the database"""
     peer_ip = update["neighbor"]["address"]["peer"]
     peer_bgpls_info = update["neighbor"]["message"]["update"]["announce"]["bgp-ls bgp-ls"][peer_ip][0]
     peer_attribute_info = update["neighbor"]["message"]["update"]["attribute"]
@@ -91,6 +96,7 @@ def create_bgpls_node(update):
     return node_data
 
 def create_bgpls_link(update):
+    """Prepares a dict from a raw BGPLSLink NLRI Update to be used in the database"""
     peer_ip = update["neighbor"]["address"]["peer"]
     peer_bgpls_info = update["neighbor"]["message"]["update"]["announce"]["bgp-ls bgp-ls"][peer_ip][0]
     peer_attribute_info = update["neighbor"]["message"]["update"]["attribute"]
@@ -140,6 +146,7 @@ def create_bgpls_link(update):
     return link_data
 
 def create_bgpls_prefix_v4(update):
+    """Prepares a dict from a raw BGPLSPrefixV4 NLRI Update to be used in the database"""
     peer_ip = update["neighbor"]["address"]["peer"]
     peer_attribute_info = update["neighbor"]["message"]["update"]["attribute"]
     prefixes = []
@@ -188,11 +195,13 @@ def create_bgpls_prefix_v4(update):
     return prefixes
 
 def create_bgpls_prefix_v6(update, update_type):
+    """Prepares a dict from a raw BGPLSPrefixV6 NLRI Update to be used in the database"""
     # Not implemented yet
     return {
     }
 
 def create_bgpls_withdraw(update):
+    """Prepares a generic dict from any withdraw update and formats it to make database queries easier"""
     withdraw = {"nodes": [], "links": [], "prefixes_v4": [], "prefixes_v6": []}
     for entry in update["neighbor"]["message"]["update"]["withdraw"]["bgp-ls bgp-ls"]:
         if entry["ls-nlri-type"] == "bgpls-node":
@@ -206,9 +215,11 @@ def create_bgpls_withdraw(update):
     return withdraw
 
 def create_bgpls_node_withdraw(nlri):
+    """Prepares a more generic dict from a BGPLSNode NLRI Update"""
     pass
 
 def create_bgpls_link_withdraw(nlri):
+    """Prepares a more generic dict from a BGPLSLink NLRI Update"""
     return {
         "node_id": find_node_id_from_link(nlri),
         "ls_nlri_type": nlri["ls-nlri-type"],
@@ -225,6 +236,7 @@ def create_bgpls_link_withdraw(nlri):
     }
 
 def create_bgpls_prefix_v4_withdraw(nlri):
+    """Prepares a more generic dict from a BGPLSPrefixV4 NLRI Update"""
     return {
         "node_id": find_node_id_from_prefix(nlri),
         "ls_nlri_type": nlri["ls-nlri-type"],
@@ -239,6 +251,7 @@ def create_bgpls_prefix_v4_withdraw(nlri):
     }
 
 def param_mapper(objmap=None, **kwargs):
+    """Validates paramaters so we don't hardcode all the potential attributes that could appear in an update and throw an error"""
     params = {}
     for key, val in kwargs.items():
         if key in objmap:

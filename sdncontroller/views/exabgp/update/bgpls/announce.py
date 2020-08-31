@@ -19,7 +19,6 @@ def announce_bgpls_node():
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
     data = request.get_json()
-    #Sanity check to confirm message type is 'update' (eg. withdraw/announce update)
     if data["type"] == "update":
         if "bgpls-node" in str(data):
             #Node Information
@@ -34,8 +33,7 @@ def announce_bgpls_link():
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
     data = request.get_json()
-    app.logger.debug("Full link update is:\n{}".format(json.dumps(data, indent=4)))
-    #Sanity check to confirm message type is 'update' (eg. withdraw/announce update)
+    #app.logger.debug("Full link update is:\n{}".format(json.dumps(data, indent=4)))
     if data["type"] == "update":
         if "bgpls-link" in str(data):
             bgp_link = create_bgpls_link(data)
@@ -50,7 +48,6 @@ def announce_bgpls_prefixv4():
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
     data = request.get_json()
-    #Sanity check to confirm message type is 'update' (eg. withdraw/announce update)
     if data["type"] == "update":
         if "bgpls-prefix-v4" in str(data):
             bgp_prefix = create_bgpls_prefix_v4(data)
@@ -66,7 +63,6 @@ def announce_bgpls_prefixv6():
         return {"error": True, "message": "Incorrect format (must be JSON)."}
 
     data = request.get_json()
-    #Sanity check to confirm message type is 'update' (eg. withdraw/announce update)
     if data["type"] == "update":
         if "bgpls-prefix-v6" in str(data):
             bgp_prefix = create_bgpls_prefix_v6(data)
@@ -75,4 +71,3 @@ def announce_bgpls_prefixv6():
                 app.logger.debug("Added BGPLSPrefixV6 {} to database for node {}".format(output.id, prefix["node_id"]))
 
     return data
-

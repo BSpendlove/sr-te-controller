@@ -5,6 +5,12 @@ import requests
 import env_file
 from sys import stdin, stdout
 
+"""
+This script will simply listen for the stdin stream and is attached to the JSON encoder as a process for ExaBGP.
+
+A simply POST request is sent to some predefined Flask routes (sdncontroller) with 0 validation...
+"""
+
 def message_parser(line):
     temp_message = json.loads(line)
 

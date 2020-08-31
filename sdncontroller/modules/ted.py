@@ -77,6 +77,7 @@ def build_visual_ted(topology):
     """ function is based on topology generated via database models """
     vis_nodes = []
     vis_edges = []
+    current_links = []
     for node in topology:
         node_data = {
             "id": node["id"],
@@ -86,16 +87,23 @@ def build_visual_ted(topology):
         vis_nodes.append(node_data)
         for link in node["node_details"]["links"]:
             remote_link = dbfunctions.get_bgpls_link_remote_node(link["id"])
+            # Reverse lookuk on local and remote node to only show a single connection per link (instead of the 2 halfs)
+            current_link = {"from": link["node_id"], "to":  remote_link}
+
+            if {"from": remote_link, "to": link["node_id"]} in current_links:
+                continue
+            else:
+                current_links.append(current_link)
+            app.logger.debug("link_node_id ({})... remote_link ({})...".format(link["node_id"], remote_link))
             link_data = {
                 "from": link["node_id"],
                 "to": remote_link,
-                "arrows": "to",
                 "label": link["link"]["link_attributes"]["bgp-ls"]["sids"][0],
                 #"label": link["link"]["interface-address"]["interface-address"],
-                "length": 300,
-                "shape": "circularImage"
+                "length": 200
             }
             vis_edges.append(link_data)
+
 
     return {"nodes": vis_nodes, "edges": vis_edges}
 

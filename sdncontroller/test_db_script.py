@@ -2,6 +2,9 @@ from modules import dbfunctions
 from models import BGPLSLink
 import json
 
+"""
+This file is manual tests against a database to confirm if functions are working as intended...
+"""
 
 node = dbfunctions.get_bgpls_node("1003232235769000000000005")
 print(json.dumps(node.as_dict(), indent=4))
