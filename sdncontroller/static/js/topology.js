@@ -1,59 +1,145 @@
-// create an array with nodes
-//console.log(nodes)
-console.log(topology_details)
-/*
-var all_nodes = [];
-var all_links = [];
+var $srtopology = (function() {
 
-for(var i=0; i < nodes.nodes.length; i++) {
-    var node_details = nodes.nodes[i];
-    var node_data = {
-        id: node_details.id,
-        label: node_details["node_details"]["node_attributes"]["bgp-ls"]["local-te-router-ids"]
+    var record_path = false;
+    var label_path = $('#label_path');
+    var recordPathBtn = $('#recordPathBtn');
+    var clearPathBtn = $('#clearPathBtn');
+    var deployBtn = $('#deployBtn');
+
+    var prefix = $('#prefixInput');
+    var nexthop = $('#nexthopInput');
+
+    var label_array = [];
+
+    var display_nodes = new vis.DataSet(topology_details["nodes"]);
+      
+    var edges = new vis.DataSet(topology_details["edges"])
+
+    // create a network
+    var container = document.getElementById("topology");
+    var data = {
+      nodes: display_nodes,
+      edges: edges
     };
-    console.log(node_details);
-    all_nodes.push(node_data);
-    for(var x=0; x < nodes.nodes[i]["node_details"]["links"].length; x++)
-    {
-        var link_details = node_details.node_details.links[x];
-        var link_data = {
-            from: link_details.node_id,
-            to: 1,
-            label: link_details.link["interface-address"]["interface-address"]
-        };
-        console.log(link_details);
-        all_links.push(link_data)
+
+    var options = {
+        interaction: { hover: true, selectConnectedEdges: false },
+      manipulation: {
+        enabled: true,
+      },
+    };
+
+    var network = new vis.Network(container, data, options);
+    
+    network.on('click', function(e) {onClick(e)});
+    function onClick(e){
+        if (record_path){
+            if (Array.isArray(e.nodes) && e.nodes.length == 1){
+                var current_node_label = getNodeSRLabel(e);
+                label_path.append(current_node_label + " ---> ");
+                label_array.push(current_node_label);
+            }
+            
+            if (Array.isArray(e.edges) && e.edges.length == 1){
+                var current_link_label = getEdgeSRLabel(e);
+                label_path.append(current_link_label + " ---> ");
+                label_array.push(current_link_label);
+            }
+            console.log("Current label stack path is: " + label_array)
+            //console.log(e);
+        }
     }
-}
 
-console.log(all_nodes);
-console.log(all_links);
-*/
-//var nodes = new vis.DataSet([
-//  { id: 1, label: "Node 1" },
-//  { id: 2, label: "Node 2" },
-//  { id: 3, label: "Node 3" },
-//  { id: 4, label: "Node 4" },
-//  { id: 5, label: "Node 5" }
-//]);
+    function getNodeSRLabel(data){
+        node_id = data.nodes[0];
+        node = display_nodes.get(node_id);
+        console.log("Node: " + node.sr_labels);
+        return node.sr_labels[0];
+    }
 
+    function getEdgeSRLabel(data){
+        //console.log("Link: " + data.edges[0]);
+        edge_id = data.edges[0];
+        edge = edges.get(edge_id);
+        console.log("Link: " + edge.label);
+        return edge.label;
+    }
 
-var display_nodes = new vis.DataSet(topology_details["nodes"]);
-  
-var edges = new vis.DataSet(topology_details["edges"])
+    function enablePathRecord(){
+        if(record_path == true){
+            recordPathBtn.html("Record Path");
+            recordPathBtn.removeClass('btn-danger');
+            recordPathBtn.addClass('btn-primary');
+            label_path.append(" Done")
+            record_path = false;
+            return;
+        }
+        resetLabelPath();
+        recordPathBtn.html("Recording...");
+        recordPathBtn.removeClass('btn-primary');
+        recordPathBtn.addClass('btn-danger');
+        record_path = true;
+        return;
+    }
 
-// create a network
-var container = document.getElementById("topology");
-var data = {
-  nodes: display_nodes,
-  edges: edges
-};
+    function clearPath(){
+        label_path.empty();
+        label_path.html("Label Path: ");
+        resetLabelPath();
+    }
 
-var options = {
-  interaction: { hover: true },
-  manipulation: {
-    enabled: true,
-  },
-};
+    function resetLabelPath(){
+        if(label_array.length){
+            label_array = [];
+        }
+    }
 
-var network = new vis.Network(container, data, options);
+    function deployPrefix(){
+        if(record_path == true){
+            alert("Path is still being recorded...");
+            return;
+        }
+
+        if(label_array.length == 0){
+            alert("Label path is 0... Please record a path...");
+            return;
+        }
+
+        $.ajax({
+            method: "POST",
+            url: "/api/v1/deploy",
+            data: JSON.stringify({
+                "prefix": prefix.val(),
+                "nexthop": nexthop.val(),
+                "label_path": label_array
+            }),
+            headers: {"Content-Type": "application/json"}
+        }).done(function (data){
+            console.log(data);
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+            console.log(errorThrown);
+        });
+
+        console.log("Deploying Prefix: " + prefix.val() + " with nexthop: " + nexthop.val());
+    }
+
+    recordPathBtn.on('click', function(e){
+        e.preventDefault();
+        enablePathRecord();
+        console.log(record_path);
+    });
+
+    clearPathBtn.on('click', function(e){
+        e.preventDefault();
+        if(record_path){
+            enablePathRecord();
+        }
+        clearPath();
+    });
+
+    deployBtn.on('click', function(e){
+        e.preventDefault();
+        deployPrefix();
+    });
+
+})();

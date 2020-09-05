@@ -1,3 +1,4 @@
 exabgp==4.2.10
 env_file==2019.4.13
 Flask==1.1.2
+requests==2.24.0

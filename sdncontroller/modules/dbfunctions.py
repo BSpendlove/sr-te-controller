@@ -43,6 +43,9 @@ def delete_bgpls_node(id):
     """Delete a BGPLS Node based on the database id"""
     return BGPLSNode.query.filter_by(id=id).delete()
 
+def get_bgpls_node_id(id):
+    return BGPLSNode.query.get(id)
+
 def get_bgpls_node(node_id):
     """Returns a BGPLS Node based on node_id (not database id)"""
     node = BGPLSNode.query.filter_by(node_id=node_id).first()
@@ -71,7 +74,6 @@ def update_bgpls_node(update):
 def get_bgpls_node_routerid_prefix(node_id):
     """Typically used to obtain the /32 route for the TE router address (eg. loopback)"""
     node = BGPLSNode.query.get(node_id)
-    app.logger.debug(node.local_te_router_ids)
     routerid_prefix = BGPLSPrefixV4.query.filter_by(
         l3_routing_topology=node.l3_routing_topology,
         ip_reachability_tlv=node.local_te_router_ids[0]
@@ -163,7 +165,7 @@ def get_bgpls_link_remote_node(id):
         ).first()
         #app.logger.debug("get_bgpls_link_remote_node (remote_link): {}".format(remote_link))
         if remote_link:
-            return remote_link.node_id
+            return remote_link
         else:
             return None
     return None
@@ -206,7 +208,8 @@ def add_bgpls_prefix_v4(node, prefix):
         for key,value in prefix.items():
             setattr(check_prefix, key, value)
             db.session.commit()
-            #app.logger.debug("Updated existing prefix {}".format(str(check_prefix)))
+            app.logger.debug("Updated existing prefix {}".format(str(check_prefix)))
+            return check_prefix
     new_prefix = BGPLSPrefixV4(**prefix)
     #app.logger.debug("Attempting to add Prefix {} to node {}".format(vars(new_prefix), node))
     node.bgpls_prefixes.append(new_prefix)

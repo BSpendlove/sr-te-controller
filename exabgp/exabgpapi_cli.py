@@ -14,6 +14,25 @@ def show_neighbors_summary():
     result = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
     return result.stdout
 
+@app.route("/exabgp/cli/announce/label", methods=["POST"])
+def announce_label():
+    if not request.is_json:
+        return {"error": True, "message": "Invalid message type, JSON should be used..."}
+
+    cmd = None
+    data = request.get_json()
+
+    if not "command" in data:
+        return {"error": True, "message": "command not found."}
+
+    cmd = "exabgpcli {}".format(data["command"])
+
+    result = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
+    if not result:
+        return None
+
+    return {"error": False, "stdout": str(result.stdout)}
+
 @app.route("/exabgp/cli/version", methods=["GET"])
 def version():
     cmd = "exabgpcli version"

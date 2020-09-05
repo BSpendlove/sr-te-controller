@@ -4,4 +4,5 @@ Flask==1.1.2
 Flask-Migrate==2.5.3
 Flask-SQLAlchemy==2.4.1
 pymongo==3.10.1
+requests==2.24.0
 Werkzeug==1.0.1

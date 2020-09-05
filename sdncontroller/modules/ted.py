@@ -56,7 +56,7 @@ def build_ted(topology):
         entry_node["prefixes"] = []
         #node_descriptor = entry_node["node_details"]["node-descriptors"]
         #node_id = "{}{}{}".format(node_descriptor["autonomous-system"], node_descriptor["bgp-ls-identifier"], node_descriptor["router-id"])
-        app.logger.debug("Found node ({})".format(node_id))
+        #app.logger.debug("Found node ({})".format(node_id))
         for entry_link in links:
             link_descriptor = entry_link["link"]["local-node-descriptors"]
             link_node_id = "{}{}{}".format(link_descriptor["autonomous-system"], link_descriptor["bgp-ls-identifier"], link_descriptor["router-id"])
@@ -75,37 +75,51 @@ def modify_ted(topology):
 
 def build_visual_ted(topology):
     """ function is based on topology generated via database models """
-    vis_nodes = []
-    vis_edges = []
-    current_links = []
+    nodes = []
+    edges = []
+    node_placeholders = []
     for node in topology:
         node_data = {
-            "id": node["id"],
-            "label": node["node_details"]["node_attributes"]["bgp-ls"]["local-te-router-ids"],
-            "title": "SID Labels: {}".format(dbfunctions.get_bgpls_node_routerid_prefix(node["id"]).sr_sids)
+            "id": node.id,
+            "label": node.local_te_router_ids,
+            "title": "SID Labels: {}".format(dbfunctions.get_bgpls_node_routerid_prefix(node.id).sr_sids),
+            "sr_labels": dbfunctions.get_bgpls_node_routerid_prefix(node.id).sr_sids
         }
-        vis_nodes.append(node_data)
-        for link in node["node_details"]["links"]:
-            remote_link = dbfunctions.get_bgpls_link_remote_node(link["id"])
-            # Reverse lookuk on local and remote node to only show a single connection per link (instead of the 2 halfs)
-            current_link = {"from": link["node_id"], "to":  remote_link}
+        app.logger.debug(json.dumps(node_data, indent=4))
+        nodes.append(node_data)
 
-            if {"from": remote_link, "to": link["node_id"]} in current_links:
-                continue
-            else:
-                current_links.append(current_link)
-            app.logger.debug("link_node_id ({})... remote_link ({})...".format(link["node_id"], remote_link))
-            link_data = {
-                "from": link["node_id"],
-                "to": remote_link,
-                "label": link["link"]["link_attributes"]["bgp-ls"]["sids"][0],
-                #"label": link["link"]["interface-address"]["interface-address"],
-                "length": 200
+        for link in node.bgpls_links:
+            remote_link = dbfunctions.get_bgpls_link_remote_node(link.id)
+            node_placeholder = {
+                "id": "N{}L{}-N{}L{}".format(node.id, link.id, remote_link.node_id, remote_link.id)
             }
-            vis_edges.append(link_data)
 
+            if "N{}L{}-N{}L{}".format(remote_link.node_id, remote_link.id, node.id, link.id) in node_placeholders:
+                link_data = {
+                    "from": node.id,
+                    "to": "N{}L{}-N{}L{}".format(remote_link.node_id, remote_link.id, node.id, link.id),
+                    "label": link.sr_sids[0],
+                    "font": {"align": "middle"},
+                    "title": "Label: {}<br>IP Address: {}<br>TE Metric: {}<br>IGP Metric: {}".format(link.sr_sids[0], link.local_interface_address, link.te_metric, link.igp_metric)
+                }
+                edges.append(link_data)
+            else:
+                node_placeholders.append("N{}L{}-N{}L{}".format(node.id, link.id, remote_link.node_id, remote_link.id))
+                link_data = {
+                    "from": node.id,
+                    "to": "N{}L{}-N{}L{}".format(node.id, link.id, remote_link.node_id, remote_link.id),
+                    "label": link.sr_sids[0],
+                    "font": {"align": "middle"},
+                    "title": "Label: {}<br>IP Address: {}<br>TE Metric: {}<br>IGP Metric: {}".format(link.sr_sids[0], link.local_interface_address, link.te_metric, link.igp_metric)
+                }
+                edges.append(link_data)
+            #app.logger.debug("Local Link: {} (Node: {})\nRemote Link: {} (Node: {})".format(link.id, link.node_id, remote_link.id, remote_link.node_id))
 
-    return {"nodes": vis_nodes, "edges": vis_edges}
+    for node_placeholder in node_placeholders:
+        nodes.append({"id": node_placeholder, "hidden": True})
+
+    vis_js_topology = {"nodes": nodes, "edges": edges}
+    return vis_js_topology
 
 def generate_ted_id(update):
     initial_id = "{}{}{}{}".format(

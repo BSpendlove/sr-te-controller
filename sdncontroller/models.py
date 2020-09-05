@@ -97,6 +97,27 @@ class BGPLSNode(db.Model):
             }
         }
 
+    def as_dict_basic(self, lazy=False):
+        return {
+            "id": self.id,
+            "node_id": self.node_id,
+            "node_details": {
+                "node_attributes": {
+                    "bgp-ls": {
+                        "area-id": self.igp_area_id,
+                        "sids": self.sr_sids
+                    }
+                },
+                "node_descriptors": {
+                    "autonomous-system": self.asn,
+                    "bgp-ls-identifier": self.bgp_ls_id,
+                    "router-id": self.router_id
+                }
+            },
+            "links": (self.bgpls_links.all() if lazy else [link.as_dict_basic() for link in self.bgpls_links.all()]),
+            "prefixes": (self.bgpls_prefixes.all() if lazy else [prefix.as_dict_basic() for prefix in self.bgpls_prefixes.all()])
+        }
+
     @property
     def local_te_router_ids(self):
         if self._local_te_router_ids:
@@ -191,6 +212,26 @@ class BGPLSLink(db.Model):
                         "sr_adj_flags": {x[:1]: int(x[-1:]) for x in [entry for entry in self.sr_adj_flags.split(";") if entry]},
                         "sids": self.sr_sids,
                         "sr-adj-weight": self.sr_adj_weight
+                    }
+                }
+            }
+        }
+
+    def as_dict_basic(self):
+        return {
+            "id": self.id,
+            "node_id": self.node_id,
+            "link": {
+                "interface-address": self.local_interface_address,
+                "neighbor-address": self.peer_interface_address,
+                "link_attributes": {
+                    "bgp-ls": {
+                        "maximum-link-bandwidth": self.maximum_link_bandwidth,
+                        "maximum-reservable-link-bandwidth": self.maximum_reservable_bandwidth,
+                        "unreserved-bandwidth": self.unreserved_bandwidth,
+                        "te-metric": self.te_metric,
+                        "igp-metric": self.igp_metric,
+                        "sids": self.sr_sids
                     }
                 }
             }
@@ -314,6 +355,23 @@ class BGPLSPrefixV4(db.Model):
             result["prefix"]["prefix_attributes"]["bgp-ls"]["sr-prefix-attribute-flags"] = {x[:1]: int(x[-1:]) for x in [entry for entry in self.sr_prefix_attribute_flags.split(";") if entry]}
 
         return result
+
+    def as_dict_basic(self):
+        return {
+            "id": self.id,
+            "node_id": self.node_id,
+            "prefix": {
+                "ip-reachability-tlv": self.ip_reachability_tlv,
+                "ip-reach-prefix": self.ip_reachability_prefix,
+                "nexthop": self.nexthop,
+                "prefix_attributes": {
+                    "bgp-ls": {
+                        "prefix-metric": self.prefix_metric,
+                        "sids": self.sr_sids
+                    }
+                }
+            }
+        }
 
     @property
     def sr_sids(self):
