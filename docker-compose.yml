@@ -1,5 +1,14 @@
 version: "3.1"
 services:
+#  gobgpapi:
+#    build: ./gobgp-api
+#    ports:
+#      - "50051:50051"
+#      - "9000:9000"
+#    container_name: gobgpapi
+#    restart: always
+#    depends_on:
+#      - "sdn_controller"
   exabgpapi:
     build: ./exabgp
     ports:

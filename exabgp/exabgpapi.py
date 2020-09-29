@@ -33,8 +33,9 @@ while True:
         
         message = message_parser(line)
         message_string = str(message)
+        print(message_string)
         url = None
-
+        """
         if message:
             if message["type"] == "state":
                 if message["neighbor"]["state"] == "up":
@@ -62,7 +63,6 @@ while True:
                         url = "{}/exabgp/update/bgpls/announce/prefixv6".format(api_url)
                 elif "withdraw" in message_string:
                     url = "{}/exabgp/update/bgpls/withdraw/all".format(api_url)
-                    """
                     if "bgpls-node" in message_string:
                         # /exabgp/update/bgpls/withdraw/node
                         url = "{}/exabgp/update/bgpls/withdraw/node".format(api_url)
@@ -75,9 +75,10 @@ while True:
                     if "bgpls-prefix-v6" in message_string:
                         # /exabgp/update/bgpls/withdraw/prefixv6
                         url = "{}/exabgp/update/bgpls/withdraw/prefixv6".format(api_url)
-                    """
             if url:
                 requests.post(url, json=message)
+        """
+
 
     except KeyboardInterrupt:
         pass

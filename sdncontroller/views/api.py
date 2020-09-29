@@ -34,7 +34,7 @@ def deploy():
     if not "label_path" in data:
         return {"error": True, "message": "label path not found."}
 
-    cmd = "neighbor 192.168.0.16 announce route {} next-hop {} label [ {} ]".format(data["prefix"], data["nexthop"], " ".join(map(str, data["label_path"])))
+    cmd = "neighbor 192.168.0.249 announce route {} next-hop {} label [ {} ]".format(data["prefix"], data["nexthop"], " ".join(map(str, data["label_path"])))
     output = requests.request(
         "POST",
         "http://192.168.0.16:5001/exabgp/cli/announce/label",
