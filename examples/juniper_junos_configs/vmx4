@@ -1,0 +1,133 @@
+system {
+    syslog {
+        user * {
+            any emergency;
+            pfe none;
+        }
+        file messages {
+            any notice;
+            authorization info;
+        }
+        file interactive-commands {
+            interactive-commands any;
+        }
+    }
+    processes {
+        dhcp-service {
+            traceoptions {
+                file dhcp_logfile size 10m;
+                level all;
+                flag packet;
+            }
+        }
+    }
+}
+chassis {
+    network-services enhanced-ip;
+}
+interfaces {
+    ge-0/0/0 {
+        unit 0 {
+            family inet {
+                address 10.0.24.4/24;
+            }
+            family iso;
+            family mpls;
+        }
+    }
+    ge-0/0/1 {
+        unit 0 {
+            family inet {
+                address 10.0.46.4/24;   
+            }
+            family iso;
+            family mpls;
+        }
+    }
+    ge-0/0/9 {
+        unit 0 {
+            family inet {
+                address 10.50.4.1/24;
+            }
+        }
+    }
+    fxp0 {
+        unit 0 {
+            family inet {
+                dhcp {
+                    vendor-id Juniper-vmx-VM5F74B2B84A;
+                }
+            }
+        }
+    }
+    lo0 {
+        unit 0 {                        
+            family inet {
+                address 10.255.255.4/32;
+            }
+            family iso {
+                address 49.0001.0000.0000.0004.00;
+            }
+        }
+    }
+}
+protocols {
+    mpls {
+        traffic-engineering {
+            bgp-igp-both-ribs;
+            database {
+                import {
+                    policy TE;
+                }
+            }
+        }
+        interface ge-0/0/0.0;
+        interface ge-0/0/1.0;
+    }
+    bgp {                               
+        group IBGP-RR-V4 {
+            type internal;
+            local-address 10.255.255.4;
+            family inet {
+                labeled-unicast;
+            }
+            export BGP-ADVERTISE-NETWORKS;
+            local-as 100;
+            neighbor 10.255.255.1;
+        }
+    }
+    isis {
+        source-packet-routing {
+            node-segment ipv4-index 4;
+        }
+        level 1 disable;
+        level 2 {
+            wide-metrics-only;
+            source-packet-routing;
+        }
+        interface ge-0/0/0.0 {
+            hello-padding disable;
+            point-to-point;             
+            level 1 disable;
+        }
+        interface ge-0/0/1.0 {
+            hello-padding disable;
+            point-to-point;
+            level 1 disable;
+        }
+        interface lo0.0;
+    }
+    source-packet-routing;
+}
+policy-options {
+    policy-statement BGP-ADVERTISE-NETWORKS {
+        from {
+            route-filter 10.50.4.0/24 exact;
+        }
+        then accept;
+    }
+    policy-statement TE {
+        from family traffic-engineering;
+        then accept;
+    }
+}    

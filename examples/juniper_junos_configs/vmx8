@@ -2,6 +2,7 @@ system {
     syslog {
         user * {
             any emergency;
+            pfe none;
         }
         file messages {
             any notice;
@@ -19,8 +20,7 @@ system {
                 flag packet;
             }
         }
-    }                                   
-    ## Warning: missing mandatory statement(s): 'root-authentication'
+    }
 }
 chassis {
     network-services enhanced-ip;
@@ -29,25 +29,24 @@ interfaces {
     ge-0/0/0 {
         unit 0 {
             family inet {
-                address 192.168.0.249/24;
-            }
-            family iso;
-        }
-    }
-    ge-0/0/1 {
-        unit 0 {
-            family inet {
-                address 10.0.12.1/24;
+                address 10.0.68.8/24;
             }
             family iso;
             family mpls;
         }
-    }                                   
+    }
+    ge-0/0/9 {
+        unit 0 {
+            family inet {
+                address 10.50.8.1/24;   
+            }
+        }
+    }
     fxp0 {
         unit 0 {
             family inet {
                 dhcp {
-                    vendor-id Juniper-vmx-VM5F72759A0D;
+                    vendor-id Juniper-vmx-VM5F74B24EF9;
                 }
             }
         }
@@ -55,17 +54,16 @@ interfaces {
     lo0 {
         unit 0 {
             family inet {
-                address 10.255.255.1/32;
-                address 172.24.34.1/24;
+                address 10.255.255.8/32;
             }
             family iso {
-                address 49.0001.0000.0000.0001.00;
+                address 49.0001.0000.0000.0008.00;
             }
         }
     }
-}
+}                                       
 protocols {
-    mpls {                              
+    mpls {
         traffic-engineering {
             bgp-igp-both-ribs;
             database {
@@ -74,47 +72,32 @@ protocols {
                 }
             }
         }
-        interface ge-0/0/1.0;
+        interface ge-0/0/0.0;
     }
     bgp {
-        group IBGP-V4 {
+        group IBGP-RR-V4 {
             type internal;
-            local-address 192.168.0.249;
-            family inet {
-                labeled-unicast;
-            }
-            family traffic-engineering {
-                unicast;
-            }
-            export [ TE BGP-ADVERTISE-NETWORKS ];
-            cluster 10.255.255.1;
-            local-as 100;               
-            neighbor 192.168.0.16;
-        }
-        group IBGP-LU-V4 {
-            type internal;
-            local-address 10.255.255.1;
+            local-address 10.255.255.8;
             family inet {
                 labeled-unicast;
             }
             export BGP-ADVERTISE-NETWORKS;
-            cluster 10.255.255.1;
             local-as 100;
-            neighbor 10.255.255.3;
+            neighbor 10.255.255.1;
+            neighbor 192.168.0.16;      
         }
     }
     isis {
         source-packet-routing {
-            srgb start-label 80000 index-range 4000;
-            node-segment ipv4-index 1;
+            node-segment ipv4-index 8;
         }
         level 1 disable;
-        level 2 wide-metrics-only;
-        interface ge-0/0/0.0 {
-            passive;                    
-            level 1 disable;
+        level 2 {
+            wide-metrics-only;
+            source-packet-routing;
         }
-        interface ge-0/0/1.0 {
+        interface ge-0/0/0.0 {
+            hello-padding disable;
             point-to-point;
             level 1 disable;
         }
@@ -124,15 +107,13 @@ protocols {
 }
 policy-options {
     policy-statement BGP-ADVERTISE-NETWORKS {
-        term LOOPBACK {
-            from {
-                route-filter 172.24.34.0/24 exact;
-            }
-            then accept;
+        from {                          
+            route-filter 10.50.8.0/24 exact;
         }
+        then accept;
     }
     policy-statement TE {
         from family traffic-engineering;
         then accept;
-    }                                   
+    }
 }
