@@ -3,7 +3,7 @@
 This is a fairly slow attempt in making some kind of python API that allows you to interact with the IGP (IS-IS/OSPF) network. The initial idea of this project is for the learning experience both for in-depth networking and developing my python skills.
 
 Initial idea topology/container configuration:
-![exabgp and API Example](/img/exabgp-sdn-controller-example.JPG)
+![exabgp and API Example](/img/exabgp-sdn-controller.JPG)
 
 Above is an example of the idea I had in my head when I first begun the project. The initial idea went something like this:
 
