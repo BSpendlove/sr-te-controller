@@ -1,9 +1,12 @@
 #!/usr/bin/env python
+import logging
 import json
 import os
 import requests
 import env_file
 from sys import stdin, stdout
+
+logging.basicConfig(level=logging.DEBUG)
 
 """
 This script will simply listen for the stdin stream and is attached to the JSON encoder as a process for ExaBGP.
@@ -12,8 +15,12 @@ A simply POST request is sent to some predefined Flask routes (sdncontroller) wi
 """
 
 def message_parser(line):
-    temp_message = json.loads(line)
-
+    temp_message = None
+    try:
+        temp_message = json.loads(line)
+    except Exception as error:
+        logging.debug("Error trying json.loads() on line: \n{}".format(line))
+        logging.debug("Exception Error was: {}".format(error))
     return temp_message
 
 api_details = env_file.get(path="/exabgp/env/api")
@@ -33,9 +40,7 @@ while True:
         
         message = message_parser(line)
         message_string = str(message)
-        print(message_string)
         url = None
-        """
         if message:
             if message["type"] == "state":
                 if message["neighbor"]["state"] == "up":
@@ -77,8 +82,6 @@ while True:
                         url = "{}/exabgp/update/bgpls/withdraw/prefixv6".format(api_url)
             if url:
                 requests.post(url, json=message)
-        """
-
 
     except KeyboardInterrupt:
         pass

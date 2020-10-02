@@ -70,14 +70,18 @@ def create_bgpls_node(update):
         "l3_nlri_type": peer_bgpls_info["ls-nlri-type"],
         "l3_routing_topology": peer_bgpls_info["l3-routing-topology"],
         "protocol_id": peer_bgpls_info["protocol-id"],
-        "asn": peer_bgpls_info["node-descriptors"]["autonomous-system"],
-        "bgp_ls_id": peer_bgpls_info["node-descriptors"]["bgp-ls-identifier"],
         "router_id": peer_bgpls_info["node-descriptors"]["router-id"],
         "nexthop": peer_bgpls_info["nexthop"],
         "origin": peer_attribute_info["origin"],
         "local_preference": peer_attribute_info["local-preference"],
         "igp_area_id": peer_attribute_info["bgp-ls"]["area-id"]
     }
+
+    if "autonomous-system" in peer_bgpls_info["node-descriptors"]:
+        node_data["asn"] = peer_bgpls_info["node-descriptors"]["autonomous-system"]
+
+    if "bgp-ls-identifier" in peer_bgpls_info["node-descriptors"]:
+        node_data["bgp_ls_id"] = peer_bgpls_info["node-descriptors"]["bgp-ls-identifier"]
 
     if "local-te-router-ids" in peer_attribute_info["bgp-ls"]:
         node_data["local_te_router_ids"] = peer_attribute_info["bgp-ls"]["local-te-router-ids"]
@@ -157,16 +161,19 @@ def create_bgpls_prefix_v4(update):
             "l3_nlri_type": prefix["ls-nlri-type"],
             "l3_routing_topology": prefix["l3-routing-topology"],
             "protocol_id": prefix["protocol-id"],
-            "local_asn": prefix["node-descriptors"]["autonomous-system"],
-            "local_bgp_ls_id": prefix["node-descriptors"]["bgp-ls-identifier"],
             "local_router_id": prefix["node-descriptors"]["router-id"],
             "ip_reachability_tlv": prefix["ip-reachability-tlv"],
             "ip_reachability_prefix": prefix["ip-reach-prefix"],
             "nexthop": prefix["nexthop"],
             "origin": peer_attribute_info["origin"],
-            "local_preference": peer_attribute_info["local-preference"],
-            "prefix_metric": peer_attribute_info["bgp-ls"]["prefix-metric"]
+            "local_preference": peer_attribute_info["local-preference"]
         }
+
+        if "autonomous-system" in prefix["node-descriptors"]:
+            prefix_data["local_asn"] = prefix["node-descriptors"]["autonomous-system"]
+
+        if "bgp-ls-identifier" in prefix["node-descriptors"]:
+            prefix_data["local_bgp_ls_id"] = prefix["node-descriptors"]["bgp-ls-identifier"]
 
         if "sr-prefix-flags" in peer_attribute_info["bgp-ls"]:
             flag_string = ""
@@ -189,6 +196,10 @@ def create_bgpls_prefix_v4(update):
 
         if "sr-algorithm" in peer_attribute_info["bgp-ls"]:
             prefix_data["sr_algorithm"] = peer_attribute_info["bgp-ls"]["sr-algorithm"]
+
+
+        if "prefix-metric" in peer_attribute_info["bgp-ls"]:
+            prefix_data["prefix_metric"] = peer_attribute_info["bgp-ls"]["prefix-metric"]
 
         prefixes.append(prefix_data)
 

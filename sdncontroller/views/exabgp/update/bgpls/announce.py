@@ -9,7 +9,6 @@ from modules.bgp_message_handler import (
     find_node_id_from_update
 )
 import json
-import logging
 
 bp = Blueprint("bgpls-announce", __name__, url_prefix="/exabgp/update/bgpls/announce")
 
@@ -50,6 +49,7 @@ def announce_bgpls_prefixv4():
     data = request.get_json()
     if data["type"] == "update":
         if "bgpls-prefix-v4" in str(data):
+            app.logger.debug("---------- PrefixV4 data looks like this:\n{}".format(data))
             bgp_prefix = create_bgpls_prefix_v4(data)
             for prefix in bgp_prefix:
                 output = dbfunctions.add_bgpls_prefix_v4(prefix["node_id"], prefix)
