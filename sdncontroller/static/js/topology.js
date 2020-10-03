@@ -54,7 +54,7 @@ var $srtopology = (function() {
         node_id = data.nodes[0];
         node = display_nodes.get(node_id);
         console.log("Node: " + node.sr_labels);
-        return node.sr_labels[0];
+        return node.sr_labels;
     }
 
     function getEdgeSRLabel(data){

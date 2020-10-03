@@ -79,11 +79,12 @@ def build_visual_ted(topology):
     edges = []
     node_placeholders = []
     for node in topology:
+        node_sid = str(int(node.sr_sids[-1]) + int(dbfunctions.get_bgpls_node_routerid_prefix(node.id).sr_sids[-1]))
         node_data = {
             "id": node.id,
-            "label": node.local_te_router_ids,
-            "title": "SID Labels: {}".format(dbfunctions.get_bgpls_node_routerid_prefix(node.id).sr_sids),
-            "sr_labels": dbfunctions.get_bgpls_node_routerid_prefix(node.id).sr_sids
+            "label": node.local_te_router_ids[0],
+            "title": "SID Labels: {}".format(node_sid),
+            "sr_labels": node_sid
         }
         app.logger.debug(json.dumps(node_data, indent=4))
         nodes.append(node_data)
