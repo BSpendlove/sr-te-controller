@@ -90,6 +90,8 @@ def build_visual_ted(topology):
 
         for link in node.bgpls_links:
             remote_link = dbfunctions.get_bgpls_link_remote_node(link.id)
+            if not remote_link:
+                continue
             node_placeholder = {
                 "id": "N{}L{}-N{}L{}".format(node.id, link.id, remote_link.node_id, remote_link.id)
             }
@@ -98,9 +100,9 @@ def build_visual_ted(topology):
                 link_data = {
                     "from": node.id,
                     "to": "N{}L{}-N{}L{}".format(remote_link.node_id, remote_link.id, node.id, link.id),
-                    "label": link.sr_sids[0],
+                    "label": link.sr_sids[0] if link.sr_sids else None,
                     "font": {"align": "middle"},
-                    "title": "Label: {}<br>IP Address: {}<br>TE Metric: {}<br>IGP Metric: {}".format(link.sr_sids[0], link.local_interface_address, link.te_metric, link.igp_metric)
+                    "title": "Label: {}<br>IP Address: {}<br>TE Metric: {}<br>IGP Metric: {}".format(link.sr_sids[0] if link.sr_sids else None, link.local_interface_address, link.te_metric, link.igp_metric)
                 }
                 edges.append(link_data)
             else:
@@ -108,9 +110,9 @@ def build_visual_ted(topology):
                 link_data = {
                     "from": node.id,
                     "to": "N{}L{}-N{}L{}".format(node.id, link.id, remote_link.node_id, remote_link.id),
-                    "label": link.sr_sids[0],
+                    "label": link.sr_sids[0] if link.sr_sids else None,
                     "font": {"align": "middle"},
-                    "title": "Label: {}<br>IP Address: {}<br>TE Metric: {}<br>IGP Metric: {}".format(link.sr_sids[0], link.local_interface_address, link.te_metric, link.igp_metric)
+                    "title": "Label: {}<br>IP Address: {}<br>TE Metric: {}<br>IGP Metric: {}".format(link.sr_sids[0] if link.sr_sids else None, link.local_interface_address, link.te_metric, link.igp_metric)
                 }
                 edges.append(link_data)
             #app.logger.debug("Local Link: {} (Node: {})\nRemote Link: {} (Node: {})".format(link.id, link.node_id, remote_link.id, remote_link.node_id))

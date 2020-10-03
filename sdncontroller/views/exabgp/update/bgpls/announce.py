@@ -36,9 +36,11 @@ def announce_bgpls_link():
     if data["type"] == "update":
         if "bgpls-link" in str(data):
             bgp_link = create_bgpls_link(data)
-            node_id = find_node_id_from_update(data)
-            link = dbfunctions.add_bgpls_link(bgp_link["node_id"], bgp_link)
-            app.logger.debug("Added BGPLSLink ({}) to database for node {}".format(link.id, node_id))
+            app.logger.debug("BGP_LINK looks like this:\n{}".format(json.dumps(bgp_link, indent=4)))
+            for link in bgp_link:
+                node_id = find_node_id_from_update(data)
+                output = dbfunctions.add_bgpls_link(link["node_id"], link)
+                app.logger.debug("Added BGPLSLink ({}) to database for node {}".format(link["node_id"], node_id))
     return data
 
 @bp.route("/prefixv4", methods=["POST"])
@@ -49,11 +51,11 @@ def announce_bgpls_prefixv4():
     data = request.get_json()
     if data["type"] == "update":
         if "bgpls-prefix-v4" in str(data):
-            app.logger.debug("---------- PrefixV4 data looks like this:\n{}".format(data))
+            #app.logger.debug("---------- PrefixV4 data looks like this:\n{}".format(data))
             bgp_prefix = create_bgpls_prefix_v4(data)
             for prefix in bgp_prefix:
                 output = dbfunctions.add_bgpls_prefix_v4(prefix["node_id"], prefix)
-                app.logger.debug("Added BGPLSPrefixV4 {} to database for node {}".format(output.id, prefix["node_id"]))
+                app.logger.debug("Added BGPLSPrefixV4 {} to database for node {}".format(output.id, output.node_id))
 
     return data
 
@@ -68,6 +70,6 @@ def announce_bgpls_prefixv6():
             bgp_prefix = create_bgpls_prefix_v6(data)
             for prefix in bgp_prefix:
                 output = dbfunctions.add_bgpls_prefix_v6(prefix["node_id"], prefix)
-                app.logger.debug("Added BGPLSPrefixV6 {} to database for node {}".format(output.id, prefix["node_id"]))
+                app.logger.debug("Added BGPLSPrefixV6 {} to database for node {}".format(output.id, output.node_id))
 
     return data

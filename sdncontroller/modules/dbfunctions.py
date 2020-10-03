@@ -150,25 +150,27 @@ def get_bgpls_link(id):
 def get_bgpls_link_remote_node(id):
     """Returns the remote node ID on a BGPLS Link (filtered by L3 Routing Domain and Local/Peer Interface Address"""
     link = BGPLSLink.query.get(id)
+    app.logger.debug("Getting BGPLS LINK REMOTE NODE for LINK: {}".format(link))
     #app.logger.debug("get_bgpls_link_remote_node (link): {}".format(link))
-    if link:
-        remote_link = BGPLSLink.query.filter_by(
-            l3_routing_topology=link.l3_routing_topology,
-            protocol_id=link.protocol_id,
-            local_asn=link.peer_asn,
-            local_bgp_ls_id=link.peer_bgp_ls_id,
-            local_router_id=link.peer_router_id,
-            local_interface_address=link.peer_interface_address,
-            peer_interface_address=link.local_interface_address,
-            #local_te_router_ids=link.peer_te_router_ids,
-            #peer_te_router_ids=link.local_te_router_ids
-        ).first()
-        #app.logger.debug("get_bgpls_link_remote_node (remote_link): {}".format(remote_link))
-        if remote_link:
-            return remote_link
-        else:
-            return None
-    return None
+    if not link:
+        return None
+
+    remote_link = BGPLSLink.query.filter_by(
+        l3_routing_topology=link.l3_routing_topology,
+        protocol_id=link.protocol_id,
+        local_asn=link.peer_asn,
+        local_bgp_ls_id=link.peer_bgp_ls_id,
+        local_router_id=link.peer_router_id,
+        local_interface_address=link.peer_interface_address,
+        peer_interface_address=link.local_interface_address,
+        #local_te_router_ids=link.peer_te_router_ids,
+        #peer_te_router_ids=link.local_te_router_ids
+    ).first()
+    #app.logger.debug("get_bgpls_link_remote_node (remote_link): {}".format(remote_link))
+    if not remote_link:
+        return None
+
+    return remote_link
 
 def get_bgpls_links_all(node_id):
     """Returns all BGPLS Links that belong to a specific node"""

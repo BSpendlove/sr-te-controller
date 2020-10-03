@@ -42,6 +42,7 @@ while True:
         message_string = str(message)
         url = None
         if message:
+            logging.debug("Message received from peer...\n{}".format(json.dumps(message)))
             if message["type"] == "state":
                 if message["neighbor"]["state"] == "up":
                     # /exabgp/neighbor/state/up

@@ -102,52 +102,63 @@ def create_bgpls_node(update):
 def create_bgpls_link(update):
     """Prepares a dict from a raw BGPLSLink NLRI Update to be used in the database"""
     peer_ip = update["neighbor"]["address"]["peer"]
-    peer_bgpls_info = update["neighbor"]["message"]["update"]["announce"]["bgp-ls bgp-ls"][peer_ip][0]
+    #peer_bgpls_info = update["neighbor"]["message"]["update"]["announce"]["bgp-ls bgp-ls"][peer_ip][0]
     peer_attribute_info = update["neighbor"]["message"]["update"]["attribute"]
+    links = []
 
-    attribute_params = {
-        "te-metric": "te_metric",
-        "igp-metric": "igp_metric",
-        "maximum-link-bandwidth":"maximum_link_bandwidth",
-        "maximum-reservable-link-bandwidth": "maximum_reservable_bandwidth",
-        "unreserved-bandwidth": "unreserved_bandwidth",
-        "admin-group-mask": "admin_group_mask",
-        "local-te-router-ids": "local_te_router_ids",
-        "remote-te-router-id": "peer_te_router_ids",
-        "sr-adj-weight": "sr_adj_weight"
-    }
+    for link in update["neighbor"]["message"]["update"]["announce"]["bgp-ls bgp-ls"][peer_ip]:
+        link_data = {
+            "node_id": find_node_id_from_link(link),
+            "l3_nlri_type": link["ls-nlri-type"],
+            "l3_routing_topology": link["l3-routing-topology"],
+            "protocol_id": link["protocol-id"],
+            "local_router_id": link["local-node-descriptors"]["router-id"],
+            "peer_router_id": link["remote-node-descriptors"]["router-id"],
+            "local_interface_address": link["interface-address"]["interface-address"],
+            "peer_interface_address": link["neighbor-address"]["neighbor-address"],
+            "origin": peer_attribute_info["origin"],
+            "local_preference": peer_attribute_info["local-preference"]
+        }
 
-    link_data = {
-        "node_id": find_node_id_from_update(update),
-        "l3_nlri_type": peer_bgpls_info["ls-nlri-type"],
-        "l3_routing_topology": peer_bgpls_info["l3-routing-topology"],
-        "protocol_id": peer_bgpls_info["protocol-id"],
-        "local_asn": peer_bgpls_info["local-node-descriptors"]["autonomous-system"],
-        "local_bgp_ls_id": peer_bgpls_info["local-node-descriptors"]["bgp-ls-identifier"],
-        "local_router_id": peer_bgpls_info["local-node-descriptors"]["router-id"],
-        "peer_asn": peer_bgpls_info["remote-node-descriptors"]["autonomous-system"],
-        "peer_bgp_ls_id": peer_bgpls_info["remote-node-descriptors"]["bgp-ls-identifier"],
-        "peer_router_id": peer_bgpls_info["remote-node-descriptors"]["router-id"],
-        "local_interface_address": peer_bgpls_info["interface-address"]["interface-address"],
-        "peer_interface_address": peer_bgpls_info["neighbor-address"]["neighbor-address"],
-        "origin": peer_attribute_info["origin"],
-        "local_preference": peer_attribute_info["local-preference"]
-    }
+        attribute_params = {
+            "te-metric": "te_metric",
+            "igp-metric": "igp_metric",
+            "maximum-link-bandwidth":"maximum_link_bandwidth",
+            "maximum-reservable-link-bandwidth": "maximum_reservable_bandwidth",
+            "unreserved-bandwidth": "unreserved_bandwidth",
+            "admin-group-mask": "admin_group_mask",
+            "local-te-router-ids": "local_te_router_ids",
+            "remote-te-router-id": "peer_te_router_ids",
+            "sr-adj-weight": "sr_adj_weight"
+        }
 
-    link_data.update(param_mapper(attribute_params, **peer_attribute_info["bgp-ls"]))
+        link_data.update(param_mapper(attribute_params, **peer_attribute_info["bgp-ls"]))
 
-    if "sr-adj-flags" in peer_attribute_info["bgp-ls"]:
-        flag_string = ""
-        flags = peer_attribute_info["bgp-ls"]["sr-adj-flags"]
-        for key,value in flags.items():
-            flag_string += "{}:{};".format(key, value)
-        
-        link_data["sr_adj_flags"] = flag_string
+        if "autonomous-system" in link["local-node-descriptors"]:
+            link_data["local_asn"] = link["local-node-descriptors"]["autonomous-system"]
 
-    if "sids" in peer_attribute_info["bgp-ls"]:
-        link_data["sr_sids"] = peer_attribute_info["bgp-ls"]["sids"][0]
+        if "bgp-ls-identifier" in link["local-node-descriptors"]:
+            link_data["local_bgp_ls_id"] = link["local-node-descriptors"]["bgp-ls-identifier"]
 
-    return link_data
+        if "autonomous-system" in link["remote-node-descriptors"]:
+            link_data["peer_asn"] = link["remote-node-descriptors"]["autonomous-system"]
+
+        if "bgp-ls-identifier" in link["remote-node-descriptors"]:
+            link_data["peer_bgp_ls_id"] = link["remote-node-descriptors"]["bgp-ls-identifier"]
+
+        if "sr-adj-flags" in peer_attribute_info["bgp-ls"]:
+            flag_string = ""
+            flags = peer_attribute_info["bgp-ls"]["sr-adj-flags"]
+            for key,value in flags.items():
+                flag_string += "{}:{};".format(key, value)
+            
+            link_data["sr_adj_flags"] = flag_string
+
+        if "sids" in peer_attribute_info["bgp-ls"]:
+            link_data["sr_sids"] = peer_attribute_info["bgp-ls"]["sids"][0]
+
+        links.append(link_data)
+    return links
 
 def create_bgpls_prefix_v4(update):
     """Prepares a dict from a raw BGPLSPrefixV4 NLRI Update to be used in the database"""
