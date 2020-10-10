@@ -1,0 +1,56 @@
+package mplspce;
+
+message LSP {
+    optional string pcc_ip = 1;
+
+    message LSPObject {
+        optional uint32 plsp_id = 1;
+        optional bool delegated = 2;
+        optional bool sync = 3;
+        optional bool remove = 4;
+        optional bool administrative = 5;
+        optional uint32 operational = 6;
+        optional bool create = 7;
+        optional string symbolic_name =8;
+        optional string tunnel_source =9;
+        optional string tunnel_endpoint =10;
+        optional uint32 tunnel_id = 11;
+        optional uint32 lsp_id = 12;
+    }
+
+    message LSPAttributeObject {
+        optional uint32 setup_prio = 1;
+        optional uint32 hold_prio = 2;
+        optional bool local_protection = 3;
+    }
+
+    message EROSubObject {
+        optional bool loose =1;
+        optional string node_ip =2;
+        optional uint32 node_mask =3;
+    }
+
+    message EROSRSubObject {
+        optional bool loose =1;
+        optional uint32 node_label =2;
+        optional string node_ip =3;
+    }
+
+    message RROSubObject {
+        optional string node_ip =1;
+        optional uint32 node_mask =2;
+    }
+    message SRPSubObject {
+        optional uint32 srp_id = 1 [default = 0];
+    }
+
+    optional LSPObject lsp_obj = 2;
+    optional LSPAttributeObject lspa_obj = 3;
+    repeated EROSubObject ero =4;
+    repeated EROSRSubObject srero =5;
+    repeated RROSubObject rro =6;
+    optional SRPSubObject srp =7;
+    optional uint32 bandwidth = 8;
+    optional bool ero_list_empty = 9;
+
+}

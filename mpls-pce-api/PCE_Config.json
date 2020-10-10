@@ -1,0 +1,35 @@
+{
+    "TunnelName": "XRV1_t1",
+    "SR-TE": true,
+    "EndPointObject": {
+      "Tunnel_Source": "1.1.1.1",
+      "Tunnel_Destination": "4.4.4.4"
+    },
+    "LSPA_Object": {
+      "Hold_Priority": 6,
+      "Setup_Priority": 6,
+      "FRR_Desired": 0
+    },
+    "ERO_LIST": [
+      {
+        "172.16.2.2": 0
+      },
+      {
+        "172.16.3.3": 0
+      },
+      {
+        "172.16.4.4": 0
+      }
+    ],
+    "SR_ERO_LIST": [
+      {
+        "2.2.2.2": 17002
+      },
+      {
+        "3.3.3.3": 17003
+      },
+      {
+        "4.4.4.4": 17004
+      }
+    ]
+}
