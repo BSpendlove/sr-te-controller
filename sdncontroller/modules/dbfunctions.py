@@ -88,7 +88,6 @@ def add_bgpls_link(node, link):
         node = get_bgpls_node(node)
     
     # Check if current link exists..
-
     #app.logger.debug("Trying to see if Link {} exist already...".format(link))
     check_link = BGPLSLink.query.filter_by(
         node_id=node.id,
@@ -108,6 +107,7 @@ def add_bgpls_link(node, link):
         db.session.commit()
         app.logger.debug("Updated existing link {}".format(str(check_link)))
         return check_link
+
     new_link = BGPLSLink(**link)
     app.logger.debug("Attempting to add Link {} to node {}".format(new_link, node))
     node.bgpls_links.append(new_link)
