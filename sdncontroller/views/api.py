@@ -7,6 +7,12 @@ import requests
 
 bp = Blueprint("api", __name__, url_prefix="/api/v1")
 
+@bp.route("/topology", methods=["GET"])
+def get_bgpls_topology():
+    nodes = dbfunctions.get_bgpls_nodes_all()
+    ted_topology = [node.as_dict() for node in nodes]
+    return json.dumps({"nodes": ted_topology}, indent=4)
+
 @bp.route("/bgpls-node/sr_sid/<int:id>", methods=["GET"])
 def bgpls_node_sr_sid(id):
     node = dbfunctions.get_bgpls_node_id(id)
