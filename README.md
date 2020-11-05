@@ -1,5 +1,7 @@
 ### SR-TE Controller
 
+Note: I need to update this documentation since the original plan has changed, I was hoping to build some kind of MPLS LSP/SR-TE controller but it's turned into a slightly easier project to expose a northbound API of the current network in a friendly way... (either via JSON or directly querying the database via python objects)
+
 This project is a slow attempt to craft a half-working open source SR-TE controller without using PCEP/PCE (because I'm lazy)... I would like to involve PCEP/PCE in the future but currently I have opt'd to use BGP labelled unicast to send engineered label stacks  to existing routes learned via neighbors that directly peer with the controller.
 
 Initial idea topology/container configuration:

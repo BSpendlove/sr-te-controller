@@ -21,6 +21,7 @@ def announce_bgpls_node():
     if data["type"] == "update":
         if "bgpls-node" in str(data):
             #Node Information
+            app.logger.debug("---------- Node data looks like this:\n{}".format(json.dumps(data, indent=4)))
             bgp_node = create_bgpls_node(data)
             node = dbfunctions.add_bgpls_node(bgp_node)
             app.logger.debug("Added BGPLSNode {} to database...".format(node.id))
@@ -35,8 +36,9 @@ def announce_bgpls_link():
     #app.logger.debug("Full link update is:\n{}".format(json.dumps(data, indent=4)))
     if data["type"] == "update":
         if "bgpls-link" in str(data):
+            app.logger.debug("---------- Link data looks like this:\n{}".format(json.dumps(data, indent=4)))
             bgp_link = create_bgpls_link(data)
-            app.logger.debug("BGP_LINK looks like this:\n{}".format(json.dumps(bgp_link, indent=4)))
+            #app.logger.debug("BGP_LINK looks like this:\n{}".format(json.dumps(bgp_link, indent=4)))
             for link in bgp_link:
                 node_id = find_node_id_from_update(data)
                 output = dbfunctions.add_bgpls_link(link["node_id"], link)
@@ -51,7 +53,7 @@ def announce_bgpls_prefixv4():
     data = request.get_json()
     if data["type"] == "update":
         if "bgpls-prefix-v4" in str(data):
-            #app.logger.debug("---------- PrefixV4 data looks like this:\n{}".format(data))
+            app.logger.debug("---------- PrefixV4 data looks like this:\n{}".format(json.dumps(data, indent=4)))
             bgp_prefix = create_bgpls_prefix_v4(data)
             for prefix in bgp_prefix:
                 output = dbfunctions.add_bgpls_prefix_v4(prefix["node_id"], prefix)
