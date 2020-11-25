@@ -20,9 +20,9 @@ def bgpls_node_sr_sid(id):
 
     if node:
         app.logger.debug("API TEST: node_id: {}\nnode_local_te_router_ids: {}".format(node.node_id, node.local_te_router_ids))
-        node_routerid_prefix = dbfunctions.get_bgpls_node_routerid_prefix(node.id)
-        if node_routerid_prefix:
-            sr_sids = node_routerid_prefix.sr_sids
+        prefix = dbfunctions.get_bgpls_node_routerid_prefix(node.id)
+        if prefix:
+            sr_sids = prefix.sr_sids
 
     return {"node": id, "sr_sids": sr_sids}
 

@@ -1,0 +1,74 @@
+{
+    "exabgp": "4.0.1",
+    "time": 1604525010.5814495,
+    "host": "12cc649f144b",
+    "pid": 16,
+    "ppid": 1,
+    "counter": 15,
+    "type": "update",
+    "neighbor": {
+        "address": {
+            "local": "0.0.0.0",
+            "peer": "10.255.255.1"
+        },
+        "asn": {
+            "local": 100,
+            "peer": 100
+        },
+        "direction": "receive",
+        "message": {
+            "update": {
+                "attribute": {
+                    "origin": "igp",
+                    "local-preference": 100,
+                    "bgp-ls": {
+                        "node-flags": {
+                            "O": 0,
+                            "T": 0,
+                            "E": 0,
+                            "B": 0,
+                            "R": 0,
+                            "V": 0,
+                            "RSV": 0
+                        },
+                        "area-id": "490001",
+                        "local-te-router-ids": [
+                            "10.255.255.1",
+                            "172.24.34.0",
+                            "172.24.34.1"
+                        ],
+                        "sr-capability-flags": {
+                            "I": 1,
+                            "V": 1,
+                            "RSV": 0
+                        },
+                        "sids": [
+                            [
+                                1000,
+                                20000
+                            ]
+                        ],
+                        "sr-algorithms": [
+                            0
+                        ]
+                    }
+                },
+                "announce": {
+                    "bgp-ls bgp-ls": {
+                        "10.255.255.1": [
+                            {
+                                "ls-nlri-type": "bgpls-node",
+                                "l3-routing-topology": 0,
+                                "protocol-id": 2,
+                                "node-descriptors": {
+                                    "router-id": "000000000001"
+                                },
+                                "nexthop": "10.255.255.1"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}

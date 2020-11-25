@@ -21,9 +21,9 @@ def withdraw_bgpls_message():
         app.logger.debug("Received Withdraw message... Raw data is:\n{}".format(json.dumps(data, indent=4)))
         try:
             withdraw_messages = create_bgpls_withdraw(data)
-            #Check nodes:
             if withdraw_messages["nodes"]:
-                pass
+                for node in withdraw_messages["node"]:
+                    app.logger.debug("withdraw_node is: {}\n".format(json.dumps(node, indent=4))) # Need to implement safe code to remove all links and prefixes that belong to this node (which is recorded in the database already...)
             if withdraw_messages["links"]:
                 for link in withdraw_messages["links"]:
                     withdraw_link = dbfunctions.check_bgpls_link(link["node_id"], link)

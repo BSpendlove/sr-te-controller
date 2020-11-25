@@ -1,4 +1,5 @@
 from flask import Flask, request
+from shlex import quote
 import subprocess
 
 """
@@ -25,7 +26,7 @@ def announce_label():
     if not "command" in data:
         return {"error": True, "message": "command not found."}
 
-    cmd = "exabgpcli {}".format(data["command"])
+    cmd = "exabgpcli {}".format(quote(data["command"]))
 
     result = subprocess.run(cmd, stdout=subprocess.PIPE, shell=True)
     if not result:

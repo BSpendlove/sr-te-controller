@@ -1,0 +1,156 @@
+{
+    "exabgp": "4.0.1",
+    "time": 1604525010.589199,
+    "host": "12cc649f144b",
+    "pid": 16,
+    "ppid": 1,
+    "counter": 27,
+    "type": "update",
+    "neighbor": {
+        "address": {
+            "local": "0.0.0.0",
+            "peer": "10.255.255.1"
+        },
+        "asn": {
+            "local": 100,
+            "peer": 100
+        },
+        "direction": "receive",
+        "message": {
+            "update": {
+                "attribute": {
+                    "origin": "igp",
+                    "local-preference": 100,
+                    "bgp-ls": {
+                        "te-metric": 1000,
+                        "igp-metric": 1000,
+                        "sr-adj-flags": {
+                            "F": 0,
+                            "B": 0,
+                            "V": 1,
+                            "L": 1,
+                            "S": 0,
+                            "P": 0,
+                            "RSV": 0
+                        },
+                        "sids": [
+                            [
+                                16
+                            ]
+                        ],
+                        "undecoded-sids": [],
+                        "sr-adj-weight": 0
+                    }
+                },
+                "announce": {
+                    "bgp-ls bgp-ls": {
+                        "10.255.255.1": [
+                            {
+                                "ls-nlri-type": "bgpls-link",
+                                "l3-routing-topology": 0,
+                                "protocol-id": 2,
+                                "local-node-descriptors": {
+                                    "router-id": "000000000002"
+                                },
+                                "remote-node-descriptors": {
+                                    "router-id": "000000000001"
+                                },
+                                "interface-address": {
+                                    "interface-address": "10.0.12.2"
+                                },
+                                "neighbor-address": {
+                                    "neighbor-address": "10.0.12.1"
+                                }
+                            },
+                            {
+                                "ls-nlri-type": "bgpls-link",
+                                "l3-routing-topology": 0,
+                                "protocol-id": 2,
+                                "local-node-descriptors": {
+                                    "router-id": "000000000001"
+                                },
+                                "remote-node-descriptors": {
+                                    "router-id": "000000000002"
+                                },
+                                "interface-address": {
+                                    "interface-address": "10.0.12.1"
+                                },
+                                "neighbor-address": {
+                                    "neighbor-address": "10.0.12.2"
+                                }
+                            },
+                            {
+                                "ls-nlri-type": "bgpls-link",
+                                "l3-routing-topology": 0,
+                                "protocol-id": 2,
+                                "local-node-descriptors": {
+                                    "router-id": "000000000003"
+                                },
+                                "remote-node-descriptors": {
+                                    "router-id": "000000000005"
+                                },
+                                "interface-address": {
+                                    "interface-address": "10.0.35.3"
+                                },
+                                "neighbor-address": {
+                                    "neighbor-address": "10.0.35.5"
+                                }
+                            },
+                            {
+                                "ls-nlri-type": "bgpls-link",
+                                "l3-routing-topology": 0,
+                                "protocol-id": 2,
+                                "local-node-descriptors": {
+                                    "router-id": "000000000004"
+                                },
+                                "remote-node-descriptors": {
+                                    "router-id": "000000000002"
+                                },
+                                "interface-address": {
+                                    "interface-address": "10.0.24.4"
+                                },
+                                "neighbor-address": {
+                                    "neighbor-address": "10.0.24.2"
+                                }
+                            },
+                            {
+                                "ls-nlri-type": "bgpls-link",
+                                "l3-routing-topology": 0,
+                                "protocol-id": 2,
+                                "local-node-descriptors": {
+                                    "router-id": "000000000005"
+                                },
+                                "remote-node-descriptors": {
+                                    "router-id": "000000000006"
+                                },
+                                "interface-address": {
+                                    "interface-address": "10.0.56.5"
+                                },
+                                "neighbor-address": {
+                                    "neighbor-address": "10.0.56.6"
+                                }
+                            },
+                            {
+                                "ls-nlri-type": "bgpls-link",
+                                "l3-routing-topology": 0,
+                                "protocol-id": 2,
+                                "local-node-descriptors": {
+                                    "router-id": "000000000006"
+                                },
+                                "remote-node-descriptors": {
+                                    "router-id": "000000000005"
+                                },
+                                "interface-address": {
+                                    "interface-address": "10.0.56.6"
+                                },
+                                "neighbor-address": {
+                                    "neighbor-address": "10.0.56.5"
+                                }
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+}
